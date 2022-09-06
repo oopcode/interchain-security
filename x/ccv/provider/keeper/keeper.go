@@ -508,20 +508,8 @@ func (k Keeper) GetValidatorSetUpdateId(ctx sdk.Context) (validatorSetUpdateId u
 	return validatorSetUpdateId
 }
 
-type StakingHooks struct {
-	stakingtypes.StakingHooksTemplate
-	k *Keeper
-}
+func (k *Keeper) TrackNewUnbondingOperation(ctx sdk.Context, ID uint64) {
 
-var _ stakingtypes.StakingHooks = StakingHooks{}
-
-// Return the wrapper struct
-func (k *Keeper) Hooks() StakingHooks {
-	return StakingHooks{stakingtypes.StakingHooksTemplate{}, k}
-}
-
-// This stores a record of each unbonding op from staking, allowing us to track which consumer chains have unbonded
-func (h StakingHooks) AfterUnbondingInitiated(ctx sdk.Context, ID uint64) {
 	var consumerChainIDS []string
 
 	h.k.IterateConsumerChains(ctx, func(ctx sdk.Context, chainID string) (stop bool) {
@@ -554,6 +542,23 @@ func (h StakingHooks) AfterUnbondingInitiated(ctx sdk.Context, ID uint64) {
 	if err := h.k.stakingKeeper.PutUnbondingOnHold(ctx, ID); err != nil {
 		panic(fmt.Errorf("unbonding could not be put on hold: %w", err))
 	}
+}
+
+type StakingHooks struct {
+	stakingtypes.StakingHooksTemplate
+	k *Keeper
+}
+
+var _ stakingtypes.StakingHooks = StakingHooks{}
+
+// Return the wrapper struct
+func (k *Keeper) Hooks() StakingHooks {
+	return StakingHooks{stakingtypes.StakingHooksTemplate{}, k}
+}
+
+// This stores a record of each unbonding op from staking, allowing us to track which consumer chains have unbonded
+func (h StakingHooks) AfterUnbondingInitiated(ctx sdk.Context, ID uint64) {
+	h.k.TrackNewUnbondingOperation(ctx, ID)
 }
 
 // SetValsetUpdateBlockHeight sets the block height for a given valset update id
