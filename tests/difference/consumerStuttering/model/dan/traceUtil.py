@@ -2,8 +2,7 @@ import json
 
 PREFIX_DRIVER = "/Users/danwt/Documents/work/interchain-security/tests/difference/consumerStuttering/driver/"
 PREFIX_TRACE_OUPUTS = "/Users/danwt/Documents/work/interchain-security/tests/difference/consumerStuttering/model/dan/_apalache-out/main.tla/"
-DIR = "2022-09-06T17-35-10_6851387604791788497"
-
+DIR = "2022-09-06T17-55-50_14502121096210630182"
 js = []
 for i in range(10):
     fn = f"{PREFIX_TRACE_OUPUTS}{DIR}/example{i+1}.itf.json"

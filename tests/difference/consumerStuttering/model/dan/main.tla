@@ -4,10 +4,8 @@
 EXTENDS Integers, FiniteSets, Sequences, TLC
 
 VARIABLES
-    \* @type: String;
+    \* @type: Str;
     actionKind,
-    \* @type: Int;
-    stepCnt,
     \* @type: Int;
     nextVSCId,
     \* @type: Int;
@@ -74,32 +72,19 @@ RecvMaturity ==
 
 Init == 
     /\ actionKind = "Init"
-    /\ stepCnt = 0
     /\ nextVSCId = 0
     /\ nextConsumerId = 0
     /\ initialisingConsumers = {}
     /\ activeConsumers = {}
     /\ awaitedVSCIds = {}
 
-Reset == 
-    /\ actionKind' = "Reset"
-    /\ stepCnt' = 0
-    /\ nextVSCId' = 0
-    /\ nextConsumerId' = 0
-    /\ initialisingConsumers' = {}
-    /\ activeConsumers' = {}
-    /\ awaitedVSCIds' = {}
-
 Next == 
-    IF stepCnt = 20 THEN Reset ELSE \* This model completes in 10 secs with stepCnt = 16
-        /\ stepCnt' = stepCnt + 1
-        /\ \/ InitConsumer
-           \/ ActivateConsumer 
-           \/ StopConsumer
-           \/ EndBlock
-           \/ RecvMaturity
+    \/ InitConsumer
+    \/ ActivateConsumer 
+    \/ StopConsumer
+    \/ EndBlock
+    \/ RecvMaturity
 
 Inv == \A pair \in awaitedVSCIds : pair[1] \in (initialisingConsumers \cup activeConsumers)
-Long == stepCnt < 20
 
 ====

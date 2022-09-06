@@ -120,6 +120,8 @@ func TestMultipleConsumers(t *testing.T) {
 
 }
 
+// apa simulate --output-traces --length=20 --max-run=10 main.tla
+
 func TestTraces(t *testing.T) {
 	data := LoadTraces("traces.json")
 	for i, trace := range data {
