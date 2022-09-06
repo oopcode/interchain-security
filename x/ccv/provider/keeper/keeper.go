@@ -512,7 +512,7 @@ func (k *Keeper) TrackNewUnbondingOperation(ctx sdk.Context, ID uint64) {
 
 	var consumerChainIDS []string
 
-	h.k.IterateConsumerChains(ctx, func(ctx sdk.Context, chainID string) (stop bool) {
+	k.IterateConsumerChains(ctx, func(ctx sdk.Context, chainID string) (stop bool) {
 		consumerChainIDS = append(consumerChainIDS, chainID)
 		return false
 	})
@@ -520,7 +520,7 @@ func (k *Keeper) TrackNewUnbondingOperation(ctx sdk.Context, ID uint64) {
 		// Do not put the unbonding op on hold if there are no consumer chains
 		return
 	}
-	valsetUpdateID := h.k.GetValidatorSetUpdateId(ctx)
+	valsetUpdateID := k.GetValidatorSetUpdateId(ctx)
 	unbondingOp := ccv.UnbondingOp{
 		Id:                      ID,
 		UnbondingConsumerChains: consumerChainIDS,
@@ -528,18 +528,18 @@ func (k *Keeper) TrackNewUnbondingOperation(ctx sdk.Context, ID uint64) {
 
 	// Add to indexes
 	for _, consumerChainID := range consumerChainIDS {
-		index, _ := h.k.GetUnbondingOpIndex(ctx, consumerChainID, valsetUpdateID)
+		index, _ := k.GetUnbondingOpIndex(ctx, consumerChainID, valsetUpdateID)
 		index = append(index, ID)
-		h.k.SetUnbondingOpIndex(ctx, consumerChainID, valsetUpdateID, index)
+		k.SetUnbondingOpIndex(ctx, consumerChainID, valsetUpdateID, index)
 	}
 
 	// Set unbondingOp
-	if err := h.k.SetUnbondingOp(ctx, unbondingOp); err != nil {
+	if err := k.SetUnbondingOp(ctx, unbondingOp); err != nil {
 		panic(fmt.Errorf("unbonding op could not be persisted: %w", err))
 	}
 
 	// Call back into staking to tell it to stop this op from unbonding when the unbonding period is complete
-	if err := h.k.stakingKeeper.PutUnbondingOnHold(ctx, ID); err != nil {
+	if err := k.stakingKeeper.PutUnbondingOnHold(ctx, ID); err != nil {
 		panic(fmt.Errorf("unbonding could not be put on hold: %w", err))
 	}
 }
