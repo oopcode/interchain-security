@@ -2,11 +2,17 @@ package consumerStuttering
 
 import (
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	commitmenttypes "github.com/cosmos/ibc-go/v3/modules/core/23-commitment/types"
+	ibctmtypes "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
 	testkeeper "github.com/cosmos/interchain-security/testutil/keeper"
 	provider "github.com/cosmos/interchain-security/x/ccv/provider"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
+	"github.com/cosmos/interchain-security/x/ccv/provider/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 )
 
@@ -19,9 +25,25 @@ type Runner struct {
 	lastState State
 }
 
+func fixParamSubspace(ctx sdk.Context, ss paramstypes.Subspace) paramstypes.Subspace {
+	pair := paramstypes.NewParamSetPair(types.KeyTemplateClient, &ibctmtypes.ClientState{}, func(value interface{}) error { return nil })
+	keyTable := paramstypes.NewKeyTable(pair)
+	ss = ss.WithKeyTable(keyTable)
+
+	expectedClientState :=
+		ibctmtypes.NewClientState("", ibctmtypes.DefaultTrustLevel, 0, 0,
+			time.Second*10, clienttypes.Height{}, commitmenttypes.GetSDKSpecs(), []string{"upgrade", "upgradedIBCState"}, true, true)
+
+	ss.Set(ctx, types.KeyTemplateClient, expectedClientState)
+
+	return ss
+}
+
 func GetProviderKeeperAndCtx(t testing.TB, stakingKeeper ccv.StakingKeeper) (providerkeeper.Keeper, sdk.Context) {
 
 	cdc, storeKey, paramsSubspace, ctx := testkeeper.SetupInMemKeeper(t)
+
+	paramsSubspace = fixParamSubspace(ctx, paramsSubspace)
 
 	k := providerkeeper.NewKeeper(
 		cdc,
