@@ -57,6 +57,7 @@ func GetProviderKeeperAndCtx(t testing.TB, stakingKeeper ccv.StakingKeeper) (pro
 
 	paramsSubspace = fixParamSubspace(ctx, paramsSubspace)
 
+	// TODO: perhaps I can mimic the keeper creation in app.Go, only swapping out the staking keeper
 	k := providerkeeper.NewKeeper(
 		cdc,
 		storeKey,
