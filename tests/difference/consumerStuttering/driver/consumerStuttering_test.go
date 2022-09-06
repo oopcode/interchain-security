@@ -17,10 +17,6 @@ import (
 )
 
 /*
-	Actions should be:
-	-
-*/
-/*
 	Notes:
 		Provider EndBlock does
 			- CompleteMaturedUnbondingOps
@@ -49,6 +45,29 @@ type Runner struct {
 	k         *providerkeeper.Keeper
 	sk        *SpecialStakingKeeper
 	lastState State
+}
+
+func GetProviderKeeperAndCtx(t testing.TB, stakingKeeper ccv.StakingKeeper) (providerkeeper.Keeper, sdk.Context) {
+
+	cdc, storeKey, paramsSubspace, ctx := testkeeper.SetupInMemKeeper(t)
+
+	k := providerkeeper.NewKeeper(
+		cdc,
+		storeKey,
+		paramsSubspace,
+		&testkeeper.MockScopedKeeper{},
+		&testkeeper.MockChannelKeeper{},
+		&testkeeper.MockPortKeeper{},
+		&testkeeper.MockConnectionKeeper{},
+		&testkeeper.MockClientKeeper{},
+		stakingKeeper,
+		// &SpecialStakingKeeper{},
+		// &testkeeper.MockStakingKeeper{},
+		&testkeeper.MockSlashingKeeper{},
+		&testkeeper.MockAccountKeeper{},
+		"",
+	)
+	return k, ctx
 }
 
 func NewRunner(t *testing.T, initState State) *Runner {
@@ -91,16 +110,6 @@ func (r *Runner) StopConsumer(c int) {
 	r.k.StopConsumerChain(*r.ctx, chainID, lockUbd, closeChan)
 }
 
-func noUnbondEarly(t *testing.T, refCnt map[uint64]int, vscIdToOpids map[uint64][]uint64,
-	awaitedVscIds [][]int) {
-	// TODO:
-}
-
-func noUnbondLate(t *testing.T, refCnt map[uint64]int, vscIdToOpids map[uint64][]uint64,
-	awaitedVscIds [][]int, maxVscIdToCheck uint64) {
-	// TODO:
-}
-
 func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	// option 1
 	// r.am.EndBlock() TODO: which option?
@@ -118,14 +127,9 @@ func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	var updates []abci.ValidatorUpdate
 	r.k.SendValidatorUpdates(*r.ctx, updates)
 
-	// Check that for all vscIDs in model state awaitedVSCIds
-	// then refCnt is positive
-	noUnbondEarly(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds)
+	checkNoUnbondEarly(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds)
 
-	// Check that for all vscids < valUpdateId:
-	// if there is NOT an awaiting pair in model state awaitedVSCIds
-	// then refCnt is zero
-	noUnbondLate(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds, valUpdateID)
+	checkNoUnbondLate(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds, valUpdateID)
 
 }
 
@@ -168,6 +172,7 @@ func (r *Runner) handleState(s State) {
 		_ = pair
 		r.RecvMaturity(pair[0], pair[1])
 	}
+	r.lastState = s
 }
 
 func TestTraces(t *testing.T) {
@@ -185,31 +190,44 @@ func TestTraces(t *testing.T) {
 	}
 }
 
-//// Temporary below here
+// Properties
 
-// Constructs a provider keeper and context object for unit tests, backed by an in-memory db.
-func GetProviderKeeperAndCtx(t testing.TB, stakingKeeper ccv.StakingKeeper) (providerkeeper.Keeper, sdk.Context) {
-
-	cdc, storeKey, paramsSubspace, ctx := testkeeper.SetupInMemKeeper(t)
-
-	k := providerkeeper.NewKeeper(
-		cdc,
-		storeKey,
-		paramsSubspace,
-		&testkeeper.MockScopedKeeper{},
-		&testkeeper.MockChannelKeeper{},
-		&testkeeper.MockPortKeeper{},
-		&testkeeper.MockConnectionKeeper{},
-		&testkeeper.MockClientKeeper{},
-		stakingKeeper,
-		// &SpecialStakingKeeper{},
-		// &testkeeper.MockStakingKeeper{},
-		&testkeeper.MockSlashingKeeper{},
-		&testkeeper.MockAccountKeeper{},
-		"",
-	)
-	return k, ctx
+// checkNoUnbondEarly checks that for all vscIds which are still awaited, the refCnts
+// for all unbonding operations associated to the vscId are positive
+func checkNoUnbondEarly(t *testing.T, refCnt map[uint64]int, vscIdToOpids map[uint64][]uint64,
+	awaitedVscIds [][]int) {
+	for _, pair := range awaitedVscIds {
+		vscId := pair[1]
+		for _, opId := range vscIdToOpids[uint64(vscId)] {
+			if refCnt[opId] < 1 {
+				t.Fatalf("fail checkNoUnbondEarly")
+			}
+		}
+	}
 }
+
+// checkNoUnbondLate checks that for all vscId < valUpdateId: if there is NOT an awaited
+// maturity for that vscID, then the refCnts for all unbonding operations associated to
+// the vscID are 0
+func checkNoUnbondLate(t *testing.T, refCnt map[uint64]int, vscIdToOpids map[uint64][]uint64,
+	awaitedVscIds [][]int, maxVscIdToCheck uint64) {
+	stillAwaiting := make([]bool, maxVscIdToCheck)
+	for _, pair := range awaitedVscIds {
+		vscId := pair[1]
+		stillAwaiting[vscId] = true
+	}
+	for vscId, mustWaitLonger := range stillAwaiting {
+		if !mustWaitLonger {
+			for _, opId := range vscIdToOpids[uint64(vscId)] {
+				if refCnt[opId] != 0 {
+					t.Fatalf("fail checkNoUnbondLate")
+				}
+			}
+		}
+	}
+}
+
+//// Temporary below here (scratch code)
 
 type SpecialStakingKeeper struct {
 	// Controlled by this
