@@ -1,6 +1,7 @@
 package consumerStuttering
 
 import (
+	"strconv"
 	"testing"
 	"time"
 
@@ -15,15 +16,58 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
+/*
+	Actions should be:
+	-
+*/
+/*
+	Notes:
+		Provider EndBlock does
+			- CompleteMaturedUnbondingOps
+			- SendValidatorUpdates
+
+		Provider OnRecvVSCMaturedPacket does
+			- check if packet.DestinationChannel channel exists
+			- uses the packet data.ValsetUpdateId to do business logic
+
+		Provider proposals (create and stop) call into (respectively)
+			- CreateConsumerClient
+			- StopConsumerChain
+
+		Provider OnChanOpenConfirm (last handshake step) does
+			- SetConsumerChain
+
+		Provider AfterUnbondingInitiated does
+			- uses iterator IterateConsumerChains
+			- increments ref cnt and tracks opId for each chain
+*/
+
 type Runner struct {
-	am  provider.AppModule
-	k   *providerkeeper.Keeper
-	ctx *sdk.Context
+	t         *testing.T
+	ctx       *sdk.Context
+	am        provider.AppModule
+	k         *providerkeeper.Keeper
+	sk        *SpecialStakingKeeper
+	lastState State
 }
 
-func (r *Runner) CreateConsumer(id string) {
+func NewRunner(t *testing.T, initState State) *Runner {
+	stakingKeeper := NewSpecialStakingKeeper()
+	providerKeeper, ctx := GetProviderKeeperAndCtx(t, stakingKeeper)
+
+	r := Runner{t, &ctx, provider.NewAppModule(&providerKeeper), &providerKeeper, stakingKeeper, initState}
+	_ = r
+
+	return &r
+}
+
+func stringifyChainId(id int) string {
+	return "chain" + strconv.Itoa(id)
+}
+
+func (r *Runner) InitConsumer(c int) {
 	var chainID string
-	chainID = id
+	chainID = stringifyChainId(c)
 	var ih clienttypes.Height
 	ih.RevisionHeight = 0
 	ih.RevisionNumber = 0
@@ -32,37 +76,60 @@ func (r *Runner) CreateConsumer(id string) {
 	r.k.CreateConsumerClient(*r.ctx, chainID, ih, lockUbdOnTimeout)
 }
 
-// SetConsumerChain TODO:
+// ActivateConsumer TODO:
 // This is called by OnChanOpenConfirm
-func (r *Runner) SetConsumerChain() {
+func (r *Runner) ActivateConsumer(c int) {
 	var channelID string
 	r.k.SetConsumerChain(*r.ctx, channelID)
 }
 
-func (r *Runner) StopConsumer() {
+func (r *Runner) StopConsumer(c int) {
 	var chainID string
+	chainID = stringifyChainId(c)
 	var lockUbd bool
 	var closeChan bool
 	r.k.StopConsumerChain(*r.ctx, chainID, lockUbd, closeChan)
 }
 
-// TrackNewUnbondingOperation TODO:
-// This is called by StakingHooks::AfterUnbondingInitiated
-func (r *Runner) TrackNewUnbondingOperation() {
-	var id uint64
-	r.k.TrackNewUnbondingOperation(*r.ctx, id)
+func noUnbondEarly(t *testing.T, refCnt map[uint64]int, vscIdToOpids map[uint64][]uint64,
+	awaitedVscIds [][]int) {
+	// TODO:
 }
 
-func (r *Runner) SimEndBlock() {
+func noUnbondLate(t *testing.T, refCnt map[uint64]int, vscIdToOpids map[uint64][]uint64,
+	awaitedVscIds [][]int, maxVscIdToCheck uint64) {
+	// TODO:
+}
+
+func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	// option 1
 	// r.am.EndBlock() TODO: which option?
 	// option 2
 	r.k.CompleteMaturedUnbondingOps(*r.ctx)
+
+	// Add some more unbonding operations to be sent with this VSC
+	valUpdateID := r.k.GetValidatorSetUpdateId(*r.ctx)
+	for i := 0; i < 3; i++ { // TODO: param
+		r.sk.AddUnbondingOperation(valUpdateID, func(id uint64) {
+			r.k.TrackNewUnbondingOperation(*r.ctx, id)
+		})
+	}
+
 	var updates []abci.ValidatorUpdate
 	r.k.SendValidatorUpdates(*r.ctx, updates)
+
+	// Check that for all vscIDs in model state awaitedVSCIds
+	// then refCnt is positive
+	noUnbondEarly(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds)
+
+	// Check that for all vscids < valUpdateId:
+	// if there is NOT an awaiting pair in model state awaitedVSCIds
+	// then refCnt is zero
+	noUnbondLate(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds, valUpdateID)
+
 }
 
-func (r *Runner) SimOnRecvVSCMaturedPacket() {
+func (r *Runner) RecvMaturity(c int, vscId int) {
 	var packet channeltypes.Packet
 	packet.DestinationChannel = ""
 	var data ccv.VSCMaturedPacketData
@@ -70,66 +137,50 @@ func (r *Runner) SimOnRecvVSCMaturedPacket() {
 	r.k.OnRecvVSCMaturedPacket(*r.ctx, packet, data)
 }
 
-// TestMultipleConsumers TODO:
-func TestMultipleConsumers(t *testing.T) {
-	/*
-		Actions should be:
-		-
-	*/
-	/*
-			Notes:
-				Provider EndBlock does
-					- CompleteMaturedUnbondingOps
-					- SendValidatorUpdates
-
-				Provider OnRecvVSCMaturedPacket does
-					- check if packet.DestinationChannel channel exists
-					- uses the packet data.ValsetUpdateId to do business logic
-
-				Provider proposals (create and stop) call into (respectively)
-					- CreateConsumerClient
-					- StopConsumerChain
-
-				Provider OnChanOpenConfirm (last handshake step) does
-					- SetConsumerChain
-
-				Provider AfterUnbondingInitiated does
-					- uses iterator IterateConsumerChains
-					- increments ref cnt and tracks opId for each chain
-
-		Idea:
-			We want to test that all unbonding operation refCnts are appropriate
-
-			We can use a model which uses abstract validator state transitions.
-			The model will trigger EndBlock which will make
-
-			The model should track which validators care about which vscid
-
-			there can be an arbitrary number of unbonding ops for a given vscid
-			always send 1 vscid by making ValidatorUpdates return something
-			The model just causes an active validator to acknowledge an arbitrary vscid
-			the driver takes the unbonding ops for that vscid and decrements the refcnts
-			the driver checks that
-
-	*/
-
-	providerKeeper, ctx := testkeeper.GetProviderKeeperAndCtx(t)
-
-	r := Runner{provider.NewAppModule(&providerKeeper), &providerKeeper, &ctx}
-	_ = r
-
-}
-
 // apa simulate --output-traces --length=20 --max-run=10 main.tla
+
+func (r *Runner) handleState(s State) {
+	if s.Kind == "InitConsumer" {
+		// Get newly initialised
+		id := getDifferentInt(s.InitialisingConsumers, r.lastState.InitialisingConsumers)
+		_ = id
+		r.InitConsumer(*id)
+	}
+	if s.Kind == "ActivateConsumer" {
+		// Get newly active
+		id := getDifferentInt(s.ActiveConsumers, r.lastState.ActiveConsumers)
+		_ = id
+		r.ActivateConsumer(*id)
+	}
+	if s.Kind == "StopConsumer" {
+		knew := []int{}
+		knew = append(knew, r.lastState.InitialisingConsumers...)
+		knew = append(knew, r.lastState.ActiveConsumers...)
+		id := getDifferentInt(knew, []int{})
+		_ = id
+		r.StopConsumer(*id)
+	}
+	if s.Kind == "EndBlock" {
+		r.EndBlock(s.AwaitedVscIds)
+	}
+	if s.Kind == "RecvMaturity" {
+		pair := getDifferentIntPair(r.lastState.AwaitedVscIds, s.AwaitedVscIds)
+		_ = pair
+		r.RecvMaturity(pair[0], pair[1])
+	}
+}
 
 func TestTraces(t *testing.T) {
 	data := LoadTraces("traces.json")
 	for i, trace := range data {
 		_ = i
 		_ = trace
-		for j, s := range trace.States {
+		initState := trace.States[0]
+		runner := NewRunner(t, initState)
+		for j, s := range trace.States[1:] {
 			_ = j
 			_ = s
+			runner.handleState(s)
 		}
 	}
 }
@@ -137,7 +188,7 @@ func TestTraces(t *testing.T) {
 //// Temporary below here
 
 // Constructs a provider keeper and context object for unit tests, backed by an in-memory db.
-func GetProviderKeeperAndCtx(t testing.TB) (providerkeeper.Keeper, sdk.Context) {
+func GetProviderKeeperAndCtx(t testing.TB, stakingKeeper ccv.StakingKeeper) (providerkeeper.Keeper, sdk.Context) {
 
 	cdc, storeKey, paramsSubspace, ctx := testkeeper.SetupInMemKeeper(t)
 
@@ -150,7 +201,8 @@ func GetProviderKeeperAndCtx(t testing.TB) (providerkeeper.Keeper, sdk.Context) 
 		&testkeeper.MockPortKeeper{},
 		&testkeeper.MockConnectionKeeper{},
 		&testkeeper.MockClientKeeper{},
-		&SpecialStakingKeeper{},
+		stakingKeeper,
+		// &SpecialStakingKeeper{},
 		// &testkeeper.MockStakingKeeper{},
 		&testkeeper.MockSlashingKeeper{},
 		&testkeeper.MockAccountKeeper{},
@@ -160,23 +212,39 @@ func GetProviderKeeperAndCtx(t testing.TB) (providerkeeper.Keeper, sdk.Context) 
 }
 
 type SpecialStakingKeeper struct {
-	currOpId uint64
-	refCnt   map[uint64]int
+	// Controlled by this
+	nextOpId uint64
+	// Unbonding op id to reference count
+	// Initialised by this, modified by staking module
+	refCnt map[uint64]int
+	// Initialised by this, modified by staking module
+	vscIdToOpids map[uint64][]uint64
 }
 
 func NewSpecialStakingKeeper() *SpecialStakingKeeper {
-	return &SpecialStakingKeeper{0, map[uint64]int{}}
+	return &SpecialStakingKeeper{
+		0,
+		map[uint64]int{},
+		map[uint64][]uint64{},
+	}
 }
 
-func (k *SpecialStakingKeeper) AddOperation() {
-	k.refCnt[k.currOpId] = 0
-	k.currOpId += 1
+func (k *SpecialStakingKeeper) AddUnbondingOperation(vscId uint64, callback func(uint64)) {
+	if _, ok := k.vscIdToOpids[vscId]; !ok {
+		//do something here
+		k.vscIdToOpids[vscId] = []uint64{}
+	}
+	k.vscIdToOpids[vscId] = append(k.vscIdToOpids[vscId], k.nextOpId)
+	k.refCnt[k.nextOpId] = 0
+	callback(k.nextOpId)
+	k.nextOpId += 1
 }
 
 func (k *SpecialStakingKeeper) GetValidatorUpdates(ctx sdk.Context) []abci.ValidatorUpdate {
 	return []abci.ValidatorUpdate{}
 }
 func (k *SpecialStakingKeeper) UnbondingCanComplete(ctx sdk.Context, id uint64) error {
+	k.refCnt[id] -= 1
 	return nil
 }
 func (k *SpecialStakingKeeper) UnbondingTime(ctx sdk.Context) time.Duration {
@@ -201,5 +269,6 @@ func (k *SpecialStakingKeeper) PowerReduction(ctx sdk.Context) sdk.Int {
 	return sdk.ZeroInt()
 }
 func (k *SpecialStakingKeeper) PutUnbondingOnHold(ctx sdk.Context, id uint64) error {
+	k.refCnt[id] += 1
 	return nil
 }

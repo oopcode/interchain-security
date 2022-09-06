@@ -37,38 +37,25 @@ type RawTraceData struct {
 }
 
 type State struct {
-	Meta struct {
-		Index int `json:"index"`
-	} `json:"#meta"`
-	ActionKind      string `json:"actionKind"`
-	ActiveConsumers struct {
-		Set []int `json:"#set"`
-	} `json:"activeConsumers"`
-	AwaitedVscIds struct {
-		Set []struct {
-			Tup []int `json:"#tup"`
-		} `json:"#set"`
-	} `json:"awaitedVSCIds"`
-	InitialisingConsumers struct {
-		Set []int `json:"#set"`
-	} `json:"initialisingConsumers"`
-	NextConsumerID int `json:"nextConsumerId"`
-	NextVscID      int `json:"nextVSCId"`
+	Kind                  string
+	InitialisingConsumers []int
+	ActiveConsumers       []int
+	AwaitedVscIds         [][]int
 }
 
 type TraceData struct {
-	Meta struct {
-		Description       string `json:"description"`
-		Format            string `json:"format"`
-		FormatDescription string `json:"format-description"`
-	} `json:"#meta"`
-	States []State  `json:"states"`
-	Vars   []string `json:"vars"`
+	States []State
 }
 
 func convertState(in RawState) (out State) {
-	//TODO:
-	return
+	out.InitialisingConsumers = in.InitialisingConsumers.Set
+	out.ActiveConsumers = in.ActiveConsumers.Set
+	out.AwaitedVscIds = [][]int{}
+	out.Kind = in.ActionKind
+	for _, pair := range in.AwaitedVscIds.Set {
+		out.AwaitedVscIds = append(out.AwaitedVscIds, pair.Tup)
+	}
+	return out
 }
 
 func convert(in RawTraceData) (out TraceData) {
@@ -115,4 +102,35 @@ func loadRawTraces(fn string) []RawTraceData {
 	}
 
 	return ret
+}
+
+// getDifferentInt finds an int in a that is not in b
+func getDifferentInt(a, b []int) *int {
+	exist := map[int]bool{}
+	for _, x := range b {
+		exist[x] = true
+	}
+	for _, x := range a {
+		if !exist[x] {
+			return &x
+		}
+	}
+	return nil
+}
+
+// getDifferentIntPair finds an int pair in a that is not in b
+func getDifferentIntPair(a, b [][]int) []int {
+	// TODO: improve perf
+	for _, x := range a {
+		seen := false
+		for _, y := range b {
+			if y[0] == x[0] && y[1] == x[1] {
+				seen = true
+			}
+		}
+		if !seen {
+			return x
+		}
+	}
+	return nil
 }
