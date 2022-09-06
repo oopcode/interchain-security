@@ -1,0 +1,4415 @@
+[
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:12 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 0,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 0,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                1,
+                0
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 1,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 1,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 1,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 1,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 1,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 1,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 1,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 2,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 2,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 3,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 3,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": [
+            5
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 3,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 3,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 3,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            6,
+            7
+          ]
+        },
+        "nextConsumerId": 8,
+        "nextVSCId": 3,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:12 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 2,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 4,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 5,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 8,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 8,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 9,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 10,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 10,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3,
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 10,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                4,
+                10
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            3,
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 11,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:12 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 1,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 2,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 3,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 4,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 4,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 5,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 8,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 8,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 8,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 9,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 9,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:12 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 1,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 1,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 1,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 1,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 2,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 2,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                1,
+                1
+              ]
+            },
+            {
+              "#tup": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 3,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                1,
+                1
+              ]
+            },
+            {
+              "#tup": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 3,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 3,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 3,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": [
+            1,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 3,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 3,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4,
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 3,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4,
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 3,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 3,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4,
+            5,
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 4,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            2,
+            4,
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 4,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            4,
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 4,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            4,
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 4,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:12 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 1,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 4,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 5,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 5,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 5,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 6,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 6,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                6
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 7,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 7,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 8,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 9,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:11 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                0,
+                1
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 2,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 2,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 4,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 5,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 5,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 6,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 6,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 6,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                4,
+                6
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 7,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:11 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 1,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 4,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 6,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                3,
+                6
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 8,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 8,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:11 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 1,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 2,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 3,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 3,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 4,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0,
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 4,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 4,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 4,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 5,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 6,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 6,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                6
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                6
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 7,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 7,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                7
+              ]
+            },
+            {
+              "#tup": [
+                4,
+                7
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 8,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            4
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                7
+              ]
+            },
+            {
+              "#tup": [
+                4,
+                7
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 8,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:11 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 0,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 1,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 1,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 2,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 2,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 3,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1,
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 4,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 5,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 6,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 6,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                3,
+                6
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 7,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 7,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 8,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 8,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 9,
+        "stepCnt": 20
+      }
+    ]
+  },
+  {
+    "#meta": {
+      "format": "ITF",
+      "format-description": "https://apalache.informal.systems/docs/adr/015adr-trace.html",
+      "description": "Created by Apalache on Tue Sep 06 17:35:11 BST 2022"
+    },
+    "vars": [
+      "nextVSCId",
+      "stepCnt",
+      "awaitedVSCIds",
+      "nextConsumerId",
+      "initialisingConsumers",
+      "activeConsumers"
+    ],
+    "states": [
+      {
+        "#meta": {
+          "index": 0
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 0,
+        "stepCnt": 0
+      },
+      {
+        "#meta": {
+          "index": 1
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 1,
+        "stepCnt": 1
+      },
+      {
+        "#meta": {
+          "index": 2
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 0,
+        "nextVSCId": 2,
+        "stepCnt": 2
+      },
+      {
+        "#meta": {
+          "index": 3
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            0
+          ]
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 2,
+        "stepCnt": 3
+      },
+      {
+        "#meta": {
+          "index": 4
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 2,
+        "stepCnt": 4
+      },
+      {
+        "#meta": {
+          "index": 5
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 1,
+        "nextVSCId": 3,
+        "stepCnt": 5
+      },
+      {
+        "#meta": {
+          "index": 6
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            1
+          ]
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 6
+      },
+      {
+        "#meta": {
+          "index": 7
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 2,
+        "nextVSCId": 3,
+        "stepCnt": 7
+      },
+      {
+        "#meta": {
+          "index": 8
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "nextConsumerId": 3,
+        "nextVSCId": 3,
+        "stepCnt": 8
+      },
+      {
+        "#meta": {
+          "index": 9
+        },
+        "activeConsumers": {
+          "#set": []
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 3,
+        "stepCnt": 9
+      },
+      {
+        "#meta": {
+          "index": 10
+        },
+        "activeConsumers": {
+          "#set": [
+            2
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            3
+          ]
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 3,
+        "stepCnt": 10
+      },
+      {
+        "#meta": {
+          "index": 11
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 3,
+        "stepCnt": 11
+      },
+      {
+        "#meta": {
+          "index": 12
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                3
+              ]
+            },
+            {
+              "#tup": [
+                3,
+                3
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 4,
+        "nextVSCId": 4,
+        "stepCnt": 12
+      },
+      {
+        "#meta": {
+          "index": 13
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                3
+              ]
+            },
+            {
+              "#tup": [
+                3,
+                3
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            4
+          ]
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 4,
+        "stepCnt": 13
+      },
+      {
+        "#meta": {
+          "index": 14
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                3
+              ]
+            },
+            {
+              "#tup": [
+                3,
+                3
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 5,
+        "nextVSCId": 4,
+        "stepCnt": 14
+      },
+      {
+        "#meta": {
+          "index": 15
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                2,
+                3
+              ]
+            },
+            {
+              "#tup": [
+                3,
+                3
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 4,
+        "stepCnt": 15
+      },
+      {
+        "#meta": {
+          "index": 16
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                3,
+                3
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            5
+          ]
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 4,
+        "stepCnt": 16
+      },
+      {
+        "#meta": {
+          "index": 17
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3,
+            5
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                3,
+                3
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 6,
+        "nextVSCId": 4,
+        "stepCnt": 17
+      },
+      {
+        "#meta": {
+          "index": 18
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3,
+            5
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": [
+            {
+              "#tup": [
+                3,
+                3
+              ]
+            }
+          ]
+        },
+        "initialisingConsumers": {
+          "#set": [
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 4,
+        "stepCnt": 18
+      },
+      {
+        "#meta": {
+          "index": 19
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3,
+            5
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": [
+            6
+          ]
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 4,
+        "stepCnt": 19
+      },
+      {
+        "#meta": {
+          "index": 20
+        },
+        "activeConsumers": {
+          "#set": [
+            2,
+            3,
+            5
+          ]
+        },
+        "awaitedVSCIds": {
+          "#set": []
+        },
+        "initialisingConsumers": {
+          "#set": []
+        },
+        "nextConsumerId": 7,
+        "nextVSCId": 4,
+        "stepCnt": 20
+      }
+    ]
+  }
+]
