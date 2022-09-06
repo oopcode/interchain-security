@@ -11,14 +11,9 @@ VARIABLES
     initialisingConsumers,
     \* @type: Set(Int); 
     activeConsumers,
-    \* @type: Set(Int);
-    newUnbondings,
-
-    (*
-    Need to get vsc on a channel and map it to unbondings
-    
-    *)
-    \* Need to get VSC on 
+    \* Maps consumer -> vscId
+    \* @type: Set(<<Int, Int>>);
+    awaitedVSCIds
 
 InitConsumer ==
     /\ initialisingConsumers' = initialisingConsumers \cup {nextConsumerId}
