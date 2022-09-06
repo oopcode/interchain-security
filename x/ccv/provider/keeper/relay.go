@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/interchain-security/x/ccv/provider/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 	utils "github.com/cosmos/interchain-security/x/ccv/utils"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func removeStringFromSlice(slice []string, x string) (newSlice []string, numRemoved int) {
@@ -117,12 +118,9 @@ func (k Keeper) OnTimeoutPacket(ctx sdk.Context, packet channeltypes.Packet) err
 	return k.StopConsumerChain(ctx, chainID, k.GetLockUnbondingOnTimeout(ctx, chainID), false)
 }
 
-// SendValidatorUpdates sends latest validator updates to every registered consumer chain
-func (k Keeper) SendValidatorUpdates(ctx sdk.Context) {
+func (k Keeper) SendValidatorUpdates(ctx sdk.Context, valUpdates []abci.ValidatorUpdate) {
 	// get current ValidatorSetUpdateId
 	valUpdateID := k.GetValidatorSetUpdateId(ctx)
-	// get the validator updates from the staking module
-	valUpdates := k.stakingKeeper.GetValidatorUpdates(ctx)
 	k.IterateConsumerChains(ctx, func(ctx sdk.Context, chainID string) (stop bool) {
 		// check whether there is an established CCV channel to this consumer chain
 		if channelID, found := k.GetChainToChannel(ctx, chainID); found {
@@ -161,6 +159,13 @@ func (k Keeper) SendValidatorUpdates(ctx sdk.Context) {
 	})
 	k.SetValsetUpdateBlockHeight(ctx, valUpdateID, uint64(ctx.BlockHeight()+1))
 	k.IncrementValidatorSetUpdateId(ctx)
+}
+
+// QueryAndSendValidatorUpdates queries and sends latest validator updates to every registered consumer chain
+func (k Keeper) QueryAndSendValidatorUpdates(ctx sdk.Context) {
+	// get the validator updates from the staking module
+	valUpdates := k.stakingKeeper.GetValidatorUpdates(ctx)
+	k.SendValidatorUpdates(ctx, valUpdates)
 }
 
 // Sends all pending ValidatorSetChangePackets to the specified chain
