@@ -1,8 +1,11 @@
 ---- MODULE main ----
 
-EXTENDS Integers, FiniteSets, Sequences, TLC, Apalache
+\* EXTENDS Integers, FiniteSets, Sequences, TLC, Apalache
+EXTENDS Integers, FiniteSets, Sequences, TLC
 
 VARIABLES
+    \* @type: Int;
+    stepCnt,
     \* @type: Int;
     nextVSCId,
     \* @type: Int;
@@ -63,18 +66,29 @@ RecvMaturity ==
         awaitedVSCIds' = awaitedVSCIds \ {pair} 
 
 Init == 
+    /\ stepCnt = 0
     /\ nextVSCId = 0
     /\ nextConsumerId = 0
     /\ initialisingConsumers = {}
     /\ activeConsumers = {}
     /\ awaitedVSCIds = {}
 
+Reset == 
+    /\ stepCnt' = 0
+    /\ nextVSCId' = 0
+    /\ nextConsumerId' = 0
+    /\ initialisingConsumers' = {}
+    /\ activeConsumers' = {}
+    /\ awaitedVSCIds' = {}
+
 Next == 
-    \/ InitConsumer
-    \/ ActivateConsumer 
-    \/ StopConsumer
-    \/ EndBlock
-    \/ RecvMaturity
+    IF stepCnt = 16 THEN Reset ELSE \* This model completes in 10 secs with stepCnt = 16
+        /\ stepCnt' = stepCnt + 1
+        /\ \/ InitConsumer
+           \/ ActivateConsumer 
+           \/ StopConsumer
+           \/ EndBlock
+           \/ RecvMaturity
 
 Inv == \A pair \in awaitedVSCIds : pair[1] \in (initialisingConsumers \cup activeConsumers)
 
