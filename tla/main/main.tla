@@ -16,43 +16,66 @@ VARIABLES
     awaitedVSCIds
 
 InitConsumer ==
-    /\ initialisingConsumers' = initialisingConsumers \cup {nextConsumerId}
+    /\ UNCHANGED  nextVSCId
     /\ nextConsumerId' = nextConsumerId + 1
+    /\ initialisingConsumers' = initialisingConsumers \cup {nextConsumerId}
+    /\ UNCHANGED activeConsumers
+    /\ UNCHANGED awaitedVSCIds
     
 ActivateConsumer == 
-    \E c \in initialisingConsumers:
+    /\ UNCHANGED nextVSCId
+    /\ UNCHANGED nextConsumerId
+    /\ \E c \in initialisingConsumers:
         /\ initialisingConsumers' = initialisingConsumers \ {c}
         /\ activeConsumers' = activeConsumers \cup {c}
+    /\ UNCHANGED awaitedVSCIds
 
 StopConsumer == 
-    \/ \E c \in initialisingConsumers:
-        /\ initialisingConsumers' = initialisingConsumers \ {c}
-        /\ UNCHANGED activeConsumers
-    \/ \E c \in activeConsumers:
-        /\ activeConsumers' = activeConsumers \ {c}
-        /\ UNCHANGED initialisingConsumers
+    /\ UNCHANGED nextVSCId
+    /\ UNCHANGED nextConsumerId
+    /\  \/ \E c \in initialisingConsumers:
+            /\ initialisingConsumers' = initialisingConsumers \ {c}
+            /\ UNCHANGED activeConsumers
+            /\ UNCHANGED awaitedVSCIds
+        \/ \E c \in activeConsumers:
+            /\ UNCHANGED initialisingConsumers
+            /\ activeConsumers' = activeConsumers \ {c}
+            /\ awaitedVSCIds' = {pair \in awaitedVSCIds: pair[1] # c}
 
-TrackNewUnbonding == 
-    /\ newUnbondings' = newUnbondings \cup {nextUnbondingId}
-    /\ nextUnbondingId' = nextUnbondingId + 1
-
+(*
+After EndBlock the SUT will check that the ref cnts are 0 for every
+VSCID that does not appear in awaited, and that ref cnts are positive
+for every VSCID that does appear in awaited
+*)
 EndBlock == 
-    \* CompleteMatured
-    \* SendValidatorUpdates
+    /\ nextVSCId' = nextVSCId + 1
+    /\ UNCHANGED nextConsumerId
+    /\ UNCHANGED initialisingConsumers
+    /\ UNCHANGED  activeConsumers
+    /\ awaitedVSCIds' = awaitedVSCIds \cup {<<c, nextVSCId>> : c \in activeConsumers}
     
 RecvMaturity == 
+    /\ UNCHANGED nextVSCId
+    /\ UNCHANGED nextConsumerId
+    /\ UNCHANGED initialisingConsumers
+    /\ UNCHANGED activeConsumers
+    /\ \E pair \in awaitedVSCIds:
+        awaitedVSCIds' = awaitedVSCIds \ {pair} 
 
 Init == 
+    /\ nextVSCId = 0
+    /\ nextConsumerId = 0
+    /\ initialisingConsumers = {}
+    /\ activeConsumers = {}
+    /\ awaitedVSCIds = {}
 
 Next == 
     \/ InitConsumer
     \/ ActivateConsumer 
     \/ StopConsumer
-    \/ TrackNewUnbonding
-    \/ RecvMaturity
     \/ EndBlock
+    \/ RecvMaturity
 
-Inv == Len(x) < 100
-
+Inv == \A pair \in awaitedVSCIds : pair[1] \in (initialisingConsumers \cup activeConsumers)
 
 ====
