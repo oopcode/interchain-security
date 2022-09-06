@@ -21,10 +21,14 @@ type Runner struct {
 	ctx *sdk.Context
 }
 
-func (r *Runner) CreateConsumer() {
+func (r *Runner) CreateConsumer(id string) {
 	var chainID string
+	chainID = id
 	var ih clienttypes.Height
+	ih.RevisionHeight = 0
+	ih.RevisionNumber = 0
 	var lockUbdOnTimeout bool
+	lockUbdOnTimeout = false
 	r.k.CreateConsumerClient(*r.ctx, chainID, ih, lockUbdOnTimeout)
 }
 
@@ -96,7 +100,6 @@ func TestMultipleConsumers(t *testing.T) {
 	providerKeeper, ctx := testkeeper.GetProviderKeeperAndCtx(t)
 
 	r := Runner{provider.NewAppModule(&providerKeeper), &providerKeeper, &ctx}
-	r.SimEndBlock()
 
 }
 
@@ -126,6 +129,17 @@ func GetProviderKeeperAndCtx(t testing.TB) (providerkeeper.Keeper, sdk.Context) 
 }
 
 type SpecialStakingKeeper struct {
+	currOpId uint64
+	refCnt   map[uint64]int
+}
+
+func NewSpecialStakingKeeper() *SpecialStakingKeeper {
+	return &SpecialStakingKeeper{0, map[uint64]int{}}
+}
+
+func (k *SpecialStakingKeeper) AddOperation() {
+	k.refCnt[k.currOpId] = 0
+	k.currOpId += 1
 }
 
 func (k *SpecialStakingKeeper) GetValidatorUpdates(ctx sdk.Context) []abci.ValidatorUpdate {
