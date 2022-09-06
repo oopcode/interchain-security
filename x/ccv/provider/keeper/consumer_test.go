@@ -53,12 +53,6 @@ func (r *Runner) TrackNewUnbondingOperation() {
 	r.k.TrackNewUnbondingOperation(*r.ctx, id)
 }
 
-func (r *Runner) SimOnRecvVSCMaturedPacket() {
-	var packet channeltypes.Packet
-	var data ccv.VSCMaturedPacketData
-	r.k.OnRecvVSCMaturedPacket(*r.ctx, packet, data)
-}
-
 func (r *Runner) SimEndBlock() {
 	// option 1
 	// r.am.EndBlock() TODO: which option?
@@ -68,6 +62,14 @@ func (r *Runner) SimEndBlock() {
 	r.k.SendValidatorUpdates(*r.ctx, updates)
 }
 
+func (r *Runner) SimOnRecvVSCMaturedPacket() {
+	var packet channeltypes.Packet
+	packet.DestinationChannel = ""
+	var data ccv.VSCMaturedPacketData
+	data.ValsetUpdateId = 0
+	r.k.OnRecvVSCMaturedPacket(*r.ctx, packet, data)
+}
+
 // TestMultipleConsumers TODO:
 func TestMultipleConsumers(t *testing.T) {
 	/*
@@ -75,25 +77,39 @@ func TestMultipleConsumers(t *testing.T) {
 		-
 	*/
 	/*
-		Notes:
-			Provider EndBlock does
-				- CompleteMaturedUnbondingOps
-				- SendValidatorUpdates
+			Notes:
+				Provider EndBlock does
+					- CompleteMaturedUnbondingOps
+					- SendValidatorUpdates
 
-			Provider OnRecvVSCMaturedPacket does
-				- check if packet.DestinationChannel channel exists
-				- uses the packet data.ValsetUpdateId to do business logic
+				Provider OnRecvVSCMaturedPacket does
+					- check if packet.DestinationChannel channel exists
+					- uses the packet data.ValsetUpdateId to do business logic
 
-			Provider proposals (create and stop) call into (respectively)
-				- CreateConsumerClient
-				- StopConsumerChain
+				Provider proposals (create and stop) call into (respectively)
+					- CreateConsumerClient
+					- StopConsumerChain
 
-			Provider OnChanOpenConfirm (last handshake step) does
-				- SetConsumerChain
+				Provider OnChanOpenConfirm (last handshake step) does
+					- SetConsumerChain
 
-			Provider AfterUnbondingInitiated does
-				- uses iterator IterateConsumerChains
-				- increments ref cnt and tracks opId for each chain
+				Provider AfterUnbondingInitiated does
+					- uses iterator IterateConsumerChains
+					- increments ref cnt and tracks opId for each chain
+
+		Idea:
+			We want to test that all unbonding operation refCnts are appropriate
+
+			We can use a model which uses abstract validator state transitions.
+			The model will trigger EndBlock which will make
+
+			The model should track which validators care about which vscid
+
+			there can be an arbitrary number of unbonding ops for a given vscid
+			always send 1 vscid by making ValidatorUpdates return something
+			The model just causes an active validator to acknowledge an arbitrary vscid
+			the driver takes the unbonding ops for that vscid and decrements the refcnts
+			the driver checks that
 
 	*/
 
