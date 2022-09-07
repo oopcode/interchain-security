@@ -79,10 +79,9 @@ func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	var updates []abci.ValidatorUpdate
 	r.k.SendValidatorUpdates(*r.ctx, updates)
 
-	checkNoUnbondEarly(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds)
+	// checkNoUnbondEarly(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds)
 
-	checkNoUnbondLate(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds, valUpdateID)
-
+	// checkNoUnbondLate(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds, valUpdateID)
 }
 
 func (r *Runner) RecvMaturity(c int, vscId int) {

@@ -1,19 +1,26 @@
 package consumerStuttering
 
 import (
-	"encoding/json"
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	appProvider "github.com/cosmos/interchain-security/app/provider"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	commitmenttypes "github.com/cosmos/ibc-go/v3/modules/core/23-commitment/types"
+	ibctmtypes "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
+	mocks "github.com/cosmos/interchain-security/testutil/keeper"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
-	"github.com/tendermint/spm/cosmoscmd"
-	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/cosmos/interchain-security/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	ccvtypes "github.com/cosmos/interchain-security/x/ccv/types"
+	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 )
 
@@ -26,88 +33,78 @@ type Runner struct {
 }
 
 func NewRunner(t *testing.T, initState State) *Runner {
-	// stakingKeeper := appProvider.NewSpecialStakingKeeper()
+	sk := NewSpecialStakingKeeper()
 
-	app, ctx := AppAndCtx(t)
+	pk, ctx := GetProviderKeeperAndCtx(t, sk)
 
-	r := Runner{t, &ctx, &app.ProviderKeeper, app.StakingKeeper.(*appProvider.SpecialStakingKeeper), initState}
+	r := Runner{t, &ctx, &pk, sk, initState}
 	_ = r
 
 	return &r
 }
 
-func AppAndCtx(t testing.TB) (*appProvider.App, sdk.Context) {
+func GetProviderKeeperAndCtx(t testing.TB,
+	stakingKeeper *SpecialStakingKeeper) (providerkeeper.Keeper, sdk.Context) {
 
-	chainID := "testchain0"
+	cdc, storeKey, paramsSubspace, ctx := SetupInMemKeeper(t)
 
-	app, genesis := createTestingApp()
+	fixParams(ctx, paramsSubspace)
 
-	// TODO: need something inbetween?
-	stateBytes, _ := json.MarshalIndent(genesis, "", " ")
+	// ibcKeeper := GetIBCKeeper(stakingKeeper)
 
-	app.InitChain(abci.RequestInitChain{
-		ChainId:         chainID,
-		Validators:      []abci.ValidatorUpdate{},
-		ConsensusParams: consensusParams(),
-		AppStateBytes:   stateBytes,
-	})
-
-	app.Commit()
-
-	h := tmproto.Header{
-		ChainID: chainID,
-		Height:  2,
-		// TODO: this is taken from testing/coordinator.go
-		Time: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC).UTC(),
-	}
-
-	app.BeginBlock(abci.RequestBeginBlock{Header: h})
-
-	ctx := app.GetBaseApp().NewContext(false, h)
-	return app.ProviderKeeper, ctx
+	k := providerkeeper.NewKeeper(
+		cdc,
+		storeKey,
+		paramsSubspace,
+		&mocks.MockScopedKeeper{},
+		&MockChannelKeeper{},
+		// ibcKeeper.ChannelKeeper,
+		&MockPortKeeper{},
+		// &ibcKeeper.PortKeeper,
+		&MockConnectionKeeper{},
+		// ibcKeeper.ConnectionKeeper,
+		&MockClientKeeper{},
+		// ibcKeeper.ClientKeeper,
+		// &mocks.MockStakingKeeper{},
+		stakingKeeper,
+		&mocks.MockSlashingKeeper{},
+		&mocks.MockAccountKeeper{},
+		"",
+	)
+	return k, ctx
 }
 
-func createTestingApp() (*appProvider.App, map[string]json.RawMessage) {
+func SetupInMemKeeper(t testing.TB) (*codec.ProtoCodec, *storetypes.KVStoreKey, paramstypes.Subspace, sdk.Context) {
+	storeKey := sdk.NewKVStoreKey(ccvtypes.StoreKey)
+	memStoreKey := storetypes.NewMemoryStoreKey(ccvtypes.MemStoreKey)
+
 	db := tmdb.NewMemDB()
-	encoding := cosmoscmd.MakeEncodingConfig(appProvider.ModuleBasics)
-	app := appProvider.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{}).(*appProvider.App)
+	stateStore := store.NewCommitMultiStore(db)
+	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	require.NoError(t, stateStore.LoadLatestVersion())
 
-	// k := providerkeeper.NewKeeper(
-	// 	app.AppCodec(),
-	// 	sdk.NewKVStoreKey(providertypes.StoreKey),
-	// 	app.GetSubspace(providertypes.ModuleName),
-	// 	app.ScopedIBCProviderKeeper,
-	// 	app.IBCKeeper.ChannelKeeper,
-	// 	&app.IBCKeeper.PortKeeper,
-	// 	app.IBCKeeper.ConnectionKeeper,
-	// 	app.IBCKeeper.ClientKeeper,
-	// 	// NewSpecialStakingKeeper(),
-	// 	app.StakingKeeper,
-	// 	app.SlashingKeeper,
-	// 	app.AccountKeeper,
-	// 	authtypes.FeeCollectorName,
-	// )
+	registry := codectypes.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(registry)
 
-	// app.ProviderKeeper = k
-
-	return app, appProvider.NewDefaultGenesisState(encoding.Marshaler)
+	paramsSubspace := paramstypes.NewSubspace(cdc,
+		codec.NewLegacyAmino(),
+		storeKey,
+		memStoreKey,
+		paramstypes.ModuleName,
+	)
+	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
+	return cdc, storeKey, paramsSubspace, ctx
 }
 
-func consensusParams() *abci.ConsensusParams {
-	return &abci.ConsensusParams{
-		Block: &abci.BlockParams{
-			MaxBytes: 9223372036854775807,
-			MaxGas:   9223372036854775807,
-		},
-		Evidence: &tmproto.EvidenceParams{
-			MaxAgeNumBlocks: 302400,
-			MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
-			MaxBytes:        10000,
-		},
-		Validator: &tmproto.ValidatorParams{
-			PubKeyTypes: []string{
-				tmtypes.ABCIPubKeyTypeEd25519,
-			},
-		},
-	}
+func fixParams(ctx sdk.Context, ss paramstypes.Subspace) paramstypes.Subspace {
+	keyTable := paramstypes.NewKeyTable(paramstypes.NewParamSetPair(providertypes.KeyTemplateClient, &ibctmtypes.ClientState{}, func(value interface{}) error { return nil }))
+	ss = ss.WithKeyTable(keyTable)
+
+	expectedClientState :=
+		ibctmtypes.NewClientState("", ibctmtypes.DefaultTrustLevel, 0, 0,
+			time.Second*10, clienttypes.Height{}, commitmenttypes.GetSDKSpecs(), []string{"upgrade", "upgradedIBCState"}, true, true)
+
+	ss.Set(ctx, types.KeyTemplateClient, expectedClientState)
+	return ss
 }
