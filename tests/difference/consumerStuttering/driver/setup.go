@@ -67,10 +67,37 @@ func GetProviderKeeperAndCtx(t testing.TB, stakingKeeper ccv.StakingKeeper) (pro
 
 func NewRunner(t *testing.T, initState State) *Runner {
 	stakingKeeper := NewSpecialStakingKeeper()
-	providerKeeper, ctx := GetProviderKeeperAndCtx(t, stakingKeeper)
+	// providerKeeper, ctx := GetProviderKeeperAndCtx(t, stakingKeeper)
+	providerKeeper, ctx := Alternative(t, stakingKeeper)
 
 	r := Runner{t, &ctx, provider.NewAppModule(&providerKeeper), &providerKeeper, stakingKeeper, initState}
 	_ = r
 
 	return &r
+}
+
+func Alternative(t testing.TB, stakingKeeper ccv.StakingKeeper) (providerkeeper.Keeper, sdk.Context) {
+
+	cdc, storeKey, paramsSubspace, ctx := testkeeper.SetupInMemKeeper(t)
+
+	paramsSubspace = fixParamSubspace(ctx, paramsSubspace)
+
+	// TODO: perhaps I can mimic the keeper creation in app.Go, only swapping out the staking keeper
+	k := providerkeeper.NewKeeper(
+		cdc,
+		storeKey,
+		paramsSubspace,
+		&testkeeper.MockScopedKeeper{},
+		&testkeeper.MockChannelKeeper{},
+		&testkeeper.MockPortKeeper{},
+		&testkeeper.MockConnectionKeeper{},
+		&testkeeper.MockClientKeeper{},
+		stakingKeeper,
+		// &SpecialStakingKeeper{},
+		// &testkeeper.MockStakingKeeper{},
+		&testkeeper.MockSlashingKeeper{},
+		&testkeeper.MockAccountKeeper{},
+		"",
+	)
+	return k, ctx
 }
