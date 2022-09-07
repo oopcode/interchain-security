@@ -1,6 +1,8 @@
 package consumerStuttering
 
 import (
+	"fmt"
+
 	types "github.com/cosmos/cosmos-sdk/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/capability/types"
 	types5 "github.com/cosmos/ibc-go/v3/modules/core/03-connection/types"
@@ -17,22 +19,28 @@ func NewMockChannelKeeper() *MockChannelKeeper {
 }
 
 func (m *MockChannelKeeper) ChanCloseInit(ctx types.Context, portID, channelID string, chanCap *types1.Capability) error {
+	fmt.Println("ChanCloseInit")
 	return nil
 }
 
 func (m *MockChannelKeeper) GetChannel(ctx types.Context, srcPort, srcChan string) (types6.Channel, bool) {
+	fmt.Println("GetChannel")
+	return types6.Channel{ConnectionHops: []string{}}, true
 	return types6.Channel{}, false
 }
 
 func (m *MockChannelKeeper) GetNextSequenceSend(ctx types.Context, portID, channelID string) (uint64, bool) {
+	fmt.Println("GetNextSequenceSend")
 	return 0, false
 }
 
 func (m *MockChannelKeeper) SendPacket(ctx types.Context, channelCap *types1.Capability, packet exported.PacketI) error {
+	fmt.Println("SendPacket")
 	return nil
 }
 
 func (m *MockChannelKeeper) WriteAcknowledgement(ctx types.Context, chanCap *types1.Capability, packet exported.PacketI, acknowledgement exported.Acknowledgement) error {
+	fmt.Println("WriteAck")
 	return nil
 }
 
@@ -44,6 +52,8 @@ func NewMockPortKeeper() *MockPortKeeper {
 }
 
 func (m *MockPortKeeper) BindPort(ctx types.Context, portID string) *types1.Capability {
+	fmt.Println("BindPort")
+
 	return &types1.Capability{}
 }
 
@@ -55,6 +65,8 @@ func NewMockConnectionKeeper() *MockConnectionKeeper {
 }
 
 func (m *MockConnectionKeeper) GetConnection(ctx types.Context, connectionID string) (types5.ConnectionEnd, bool) {
+	fmt.Println("GetConnection")
+
 	return types5.ConnectionEnd{}, false
 }
 
@@ -66,51 +78,21 @@ func NewMockClientKeeper() *MockClientKeeper {
 }
 
 func (m *MockClientKeeper) CreateClient(ctx types.Context, clientState exported.ClientState, consensusState exported.ConsensusState) (string, error) {
+	fmt.Println("CreateClient")
 	return "", nil
 }
 
 func (m *MockClientKeeper) GetClientState(ctx types.Context, clientID string) (exported.ClientState, bool) {
-	// return
+	fmt.Println("GetClientState")
 	return &ibctmtypes.ClientState{}, false
 }
 
 func (m *MockClientKeeper) GetLatestClientConsensusState(ctx types.Context, clientID string) (exported.ConsensusState, bool) {
+	fmt.Println("GetLatestClientConsensusState")
 	return &ibctmtypes.ConsensusState{}, false
 }
 
 func (m *MockClientKeeper) GetSelfConsensusState(ctx types.Context, height exported.Height) (exported.ConsensusState, error) {
+	fmt.Println("GetSelfConsensusState")
 	return &ibctmtypes.ConsensusState{}, nil
 }
-
-/*
-
-// GetClientState gets a particular client from the store
-func (k Keeper) GetClientState(ctx sdk.Context, clientID string) (exported.ClientState, bool) {
-	store := k.ClientStore(ctx, clientID)
-	bz := store.Get(host.ClientStateKey())
-	if bz == nil {
-		return nil, false
-	}
-
-	clientState := k.MustUnmarshalClientState(bz)
-	return clientState, true
-}
-
-// SetClientState sets a particular Client to the store
-func (k Keeper) SetClientState(ctx sdk.Context, clientID string, clientState exported.ClientState) {
-	store := k.ClientStore(ctx, clientID)
-	store.Set(host.ClientStateKey(), k.MustMarshalClientState(clientState))
-}
-
-// GetClientConsensusState gets the stored consensus state from a client at a given height.
-func (k Keeper) GetClientConsensusState(ctx sdk.Context, clientID string, height exported.Height) (exported.ConsensusState, bool) {
-	store := k.ClientStore(ctx, clientID)
-	bz := store.Get(host.ConsensusStateKey(height))
-	if bz == nil {
-		return nil, false
-	}
-
-	consensusState := k.MustUnmarshalConsensusState(bz)
-	return consensusState, true
-}
-*/

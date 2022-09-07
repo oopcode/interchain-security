@@ -1,6 +1,7 @@
 package consumerStuttering
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -79,9 +80,9 @@ func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	var updates []abci.ValidatorUpdate
 	r.k.SendValidatorUpdates(*r.ctx, updates)
 
-	checkNoUnbondEarly(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds)
+	// checkNoUnbondEarly(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds)
 
-	checkNoUnbondLate(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds, valUpdateID)
+	// checkNoUnbondLate(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds, valUpdateID)
 }
 
 func (r *Runner) RecvMaturity(c int, vscId int) {
@@ -95,6 +96,8 @@ func (r *Runner) RecvMaturity(c int, vscId int) {
 // apa simulate --output-traces --length=20 --max-run=10 main.tla
 
 func (r *Runner) handleState(s State) {
+	fmt.Println("~~~~~~~~~ ", s.Kind, " ~~~~~~~~~~")
+
 	if s.Kind == "InitConsumer" {
 		// Get newly initialised
 		id := getDifferentInt(s.InitialisingConsumers, r.lastState.InitialisingConsumers)
