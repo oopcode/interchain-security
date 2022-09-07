@@ -1,7 +1,7 @@
 import json
 
 PREFIX_DRIVER = "/Users/danwt/Documents/work/interchain-security/tests/difference/consumerStuttering/driver/"
-PREFIX_TRACE_OUPUTS = "/Users/danwt/Documents/work/interchain-security/tests/difference/consumerStuttering/model/dan/_apalache-out/main.tla/"
+PREFIX_TRACE_OUPUTS = "/Users/danwt/Documents/work/interchain-security/tests/difference/consumerStuttering/model/_apalache-out/main.tla/"
 DIR = "2022-09-06T17-55-50_14502121096210630182"
 js = []
 for i in range(10):
