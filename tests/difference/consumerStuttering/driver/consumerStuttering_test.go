@@ -64,7 +64,7 @@ func (r *Runner) StopConsumer(c int) {
 
 func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	// option 1
-	// r.am.EndBlock() TODO: which option?
+	// r.k.EndBlock() //TODO: which option?
 	// option 2
 	r.k.CompleteMaturedUnbondingOps(*r.ctx)
 
@@ -79,9 +79,9 @@ func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	var updates []abci.ValidatorUpdate
 	r.k.SendValidatorUpdates(*r.ctx, updates)
 
-	// checkNoUnbondEarly(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds)
+	checkNoUnbondEarly(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds)
 
-	// checkNoUnbondLate(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds, valUpdateID)
+	checkNoUnbondLate(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds, valUpdateID)
 }
 
 func (r *Runner) RecvMaturity(c int, vscId int) {
