@@ -9,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	appProvider "github.com/cosmos/interchain-security/app/provider"
-	provider "github.com/cosmos/interchain-security/x/ccv/provider"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
@@ -24,17 +23,17 @@ import (
 type Runner struct {
 	t         *testing.T
 	ctx       *sdk.Context
-	am        provider.AppModule
 	k         *providerkeeper.Keeper
-	sk        *SpecialStakingKeeper
+	sk        *appProvider.SpecialStakingKeeper
 	lastState State
 }
 
 func NewRunner(t *testing.T, initState State) *Runner {
-	stakingKeeper := NewSpecialStakingKeeper()
+	stakingKeeper := appProvider.NewSpecialStakingKeeper()
+
 	providerKeeper, ctx := Alternative(t, stakingKeeper)
 
-	r := Runner{t, &ctx, provider.NewAppModule(&providerKeeper), &providerKeeper, stakingKeeper, initState}
+	r := Runner{t, &ctx, &providerKeeper, stakingKeeper, initState}
 	_ = r
 
 	return &r
@@ -61,10 +60,13 @@ func Alternative(t testing.TB,
 
 	h := tmproto.Header{
 		ChainID: chainID,
-		Height:  1,
+		Height:  2,
 		// TODO: this is taken from testing/coordinator.go
 		Time: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC).UTC(),
 	}
+
+	app.BeginBlock(abci.RequestBeginBlock{Header: h})
+
 	ctx := app.GetBaseApp().NewContext(false, h)
 	return app.ProviderKeeper, ctx
 }
@@ -83,16 +85,17 @@ func createTestingApp() (*appProvider.App, map[string]json.RawMessage) {
 		&app.IBCKeeper.PortKeeper,
 		app.IBCKeeper.ConnectionKeeper,
 		app.IBCKeeper.ClientKeeper,
-		NewSpecialStakingKeeper(),
+		// NewSpecialStakingKeeper(),
+		app.StakingKeeper,
 		app.SlashingKeeper,
 		app.AccountKeeper,
 		authtypes.FeeCollectorName,
 	)
 
-	app.ProviderKeeper = k
+	_ = k
+	// app.ProviderKeeper = k
 
 	return app, appProvider.NewDefaultGenesisState(encoding.Marshaler)
-
 }
 
 func consensusParams() *abci.ConsensusParams {

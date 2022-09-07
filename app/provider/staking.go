@@ -1,4 +1,4 @@
-package consumerStuttering
+package app
 
 import (
 	"time"
@@ -15,9 +15,9 @@ type SpecialStakingKeeper struct {
 	nextOpId uint64
 	// Unbonding op id to reference count
 	// Initialised by this, modified by staking module
-	refCnt map[uint64]int
+	RefCnt map[uint64]int
 	// Initialised by this, modified by staking module
-	vscIdToOpids map[uint64][]uint64
+	VscIdToOpIds map[uint64][]uint64
 }
 
 func NewSpecialStakingKeeper() *SpecialStakingKeeper {
@@ -29,12 +29,12 @@ func NewSpecialStakingKeeper() *SpecialStakingKeeper {
 }
 
 func (k *SpecialStakingKeeper) AddUnbondingOperation(vscId uint64, callback func(uint64)) {
-	if _, ok := k.vscIdToOpids[vscId]; !ok {
+	if _, ok := k.VscIdToOpIds[vscId]; !ok {
 		//do something here
-		k.vscIdToOpids[vscId] = []uint64{}
+		k.VscIdToOpIds[vscId] = []uint64{}
 	}
-	k.vscIdToOpids[vscId] = append(k.vscIdToOpids[vscId], k.nextOpId)
-	k.refCnt[k.nextOpId] = 0
+	k.VscIdToOpIds[vscId] = append(k.VscIdToOpIds[vscId], k.nextOpId)
+	k.RefCnt[k.nextOpId] = 0
 	callback(k.nextOpId)
 	k.nextOpId += 1
 }
@@ -43,7 +43,7 @@ func (k *SpecialStakingKeeper) GetValidatorUpdates(ctx sdk.Context) []abci.Valid
 	return []abci.ValidatorUpdate{}
 }
 func (k *SpecialStakingKeeper) UnbondingCanComplete(ctx sdk.Context, id uint64) error {
-	k.refCnt[id] -= 1
+	k.RefCnt[id] -= 1
 	return nil
 }
 func (k *SpecialStakingKeeper) UnbondingTime(ctx sdk.Context) time.Duration {
@@ -68,6 +68,6 @@ func (k *SpecialStakingKeeper) PowerReduction(ctx sdk.Context) sdk.Int {
 	return sdk.ZeroInt()
 }
 func (k *SpecialStakingKeeper) PutUnbondingOnHold(ctx sdk.Context, id uint64) error {
-	k.refCnt[id] += 1
+	k.RefCnt[id] += 1
 	return nil
 }

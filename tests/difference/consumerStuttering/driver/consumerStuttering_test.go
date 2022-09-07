@@ -79,9 +79,9 @@ func (r *Runner) EndBlock(awaitedVscIds [][]int) {
 	var updates []abci.ValidatorUpdate
 	r.k.SendValidatorUpdates(*r.ctx, updates)
 
-	checkNoUnbondEarly(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds)
+	checkNoUnbondEarly(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds)
 
-	checkNoUnbondLate(r.t, r.sk.refCnt, r.sk.vscIdToOpids, awaitedVscIds, valUpdateID)
+	checkNoUnbondLate(r.t, r.sk.RefCnt, r.sk.VscIdToOpIds, awaitedVscIds, valUpdateID)
 
 }
 
@@ -127,6 +127,7 @@ func (r *Runner) handleState(s State) {
 	r.lastState = s
 }
 
+// go test -v -timeout 10m -run TestTraces
 func TestTraces(t *testing.T) {
 	data := LoadTraces("traces.json")
 	for i, trace := range data {
