@@ -5,33 +5,25 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/store"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	clientkeeper "github.com/cosmos/ibc-go/v3/modules/core/02-client/keeper"
 	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	connectionkeeper "github.com/cosmos/ibc-go/v3/modules/core/03-connection/keeper"
-	channelkeeper "github.com/cosmos/ibc-go/v3/modules/core/04-channel/keeper"
-	portkeeper "github.com/cosmos/ibc-go/v3/modules/core/05-port/keeper"
 	commitmenttypes "github.com/cosmos/ibc-go/v3/modules/core/23-commitment/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibctmtypes "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
+	appProvider "github.com/cosmos/interchain-security/app/provider"
 	testkeeper "github.com/cosmos/interchain-security/testutil/keeper"
 	provider "github.com/cosmos/interchain-security/x/ccv/provider"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	"github.com/cosmos/interchain-security/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
-	"github.com/stretchr/testify/require"
 	"github.com/tendermint/spm/cosmoscmd"
-	"github.com/tendermint/spm/ibckeeper"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtypes "github.com/tendermint/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 )
 
@@ -98,87 +90,73 @@ func NewRunner(t *testing.T, initState State) *Runner {
 func Alternative(t testing.TB,
 	stakingKeeper ccv.StakingKeeper) (providerkeeper.Keeper, sdk.Context) {
 
-	cdc, storeKey, paramsSubspace, ctx := testkeeper.SetupInMemKeeper(t)
+	chainID := "testchain0"
 
-	// paramsSubspace = fixParamSubspace(ctx, paramsSubspace)
+	app, genesis := createTestingApp()
 
-	upgradeKeeper := upgradekeeper.NewKeeper(
-		map[int64]bool{},
-		sdk.NewKVStoreKey(upgradetypes.StoreKey),
-		cdc,
-		"", //TODO:
-		app.BaseApp,
-	)
+	// TODO: need something inbetween?
+	stateBytes, _ := json.MarshalIndent(genesis, "", " ")
 
-	ibcParamsSpace := paramstypes.NewSubspace(cdc,
-		cdc,
-		ibckey,
-		memStoreKey,
-		paramstypes.ModuleName,
-	)
+	app.InitChain(abci.RequestInitChain{
+		ChainId:         chainID,
+		Validators:      []abci.ValidatorUpdate{},
+		ConsensusParams: consensusParams(),
+		AppStateBytes:   stateBytes,
+	})
 
-	clientKeeper := clientkeeper.NewKeeper(cdc, ibckey, paramSpace, stakingKeeper, upgradeKeeper)
-	connectionKeeper := connectionkeeper.NewKeeper(cdc, ibckey, paramSpace, clientKeeper)
-	portKeeper := portkeeper.NewKeeper(scopedKeeper)
-	channelKeeper := channelkeeper.NewKeeper(cdc, ibckey, clientKeeper, connectionKeeper, portKeeper, scopedKeeper)
+	app.Commit()
 
-	ibcKeeper := ibckeeper.NewKeeper(
-		cdc,
-		ibckey,
-		app.GetSubspace(ibchost.ModuleName),
-		stakingKeeper,
-		upgradeKeeper,
-		scopedIBCKeeper,
-	)
+	h := tmproto.Header{
+		ChainID: chainID,
+		Height:  1,
+		// TODO: this is taken from testing/coordinator.go
+		Time: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC).UTC(),
+	}
+	ctx := app.GetBaseApp().NewContext(false, h)
+	return app.ProviderKeeper, ctx
+}
+
+func createTestingApp() (*appProvider.App, map[string]json.RawMessage) {
+	db := tmdb.NewMemDB()
+	encoding := cosmoscmd.MakeEncodingConfig(appProvider.ModuleBasics)
+	app := appProvider.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{}).(*appProvider.App)
 
 	k := providerkeeper.NewKeeper(
-		cdc,
-		storeKey,
-		paramsSubspace,
-		&testkeeper.MockScopedKeeper{},
-		&testkeeper.MockChannelKeeper{},
-		&testkeeper.MockPortKeeper{},
-		&testkeeper.MockConnectionKeeper{},
-		&testkeeper.MockClientKeeper{},
-		stakingKeeper,
-		// &SpecialStakingKeeper{},
-		// &testkeeper.MockStakingKeeper{},
-		&testkeeper.MockSlashingKeeper{},
-		&testkeeper.MockAccountKeeper{},
-		"",
+		app.AppCodec(),
+		sdk.NewKVStoreKey(providertypes.StoreKey),
+		app.GetSubspace(providertypes.ModuleName),
+		app.ScopedIBCProviderKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.IBCKeeper.ConnectionKeeper,
+		app.IBCKeeper.ClientKeeper,
+		NewSpecialStakingKeeper(),
+		app.SlashingKeeper,
+		app.AccountKeeper,
+		authtypes.FeeCollectorName,
 	)
-	return k, ctx
+
+	app.ProviderKeeper = k
+
+	return app, appProvider.NewDefaultGenesisState(encoding.Marshaler)
+
 }
 
-func SetupInMemIbcKeeper(t testing.TB) (*codec.ProtoCodec, *storetypes.KVStoreKey, paramstypes.Subspace, sdk.Context) {
-	// TODO: need to reuse context here
-	storeKey := sdk.NewKVStoreKey(ibchost.StoreKey)
-	memStoreKeyS := "mem_ibc"
-	memStoreKey := storetypes.NewMemoryStoreKey(memStoreKeyS)
-
-	db := tmdb.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db)
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
-	require.NoError(t, stateStore.LoadLatestVersion())
-
-	registry := codectypes.NewInterfaceRegistry()
-	cdc := codec.NewProtoCodec(registry)
-
-	paramsSubspace := paramstypes.NewSubspace(cdc,
-		codec.NewLegacyAmino(),
-		storeKey,
-		memStoreKey,
-		paramstypes.ModuleName,
-	)
-	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
-	return cdc, storeKey, paramsSubspace, ctx
-}
-
-func SetupTestingappProvider() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	db := tmdb.NewMemDB()
-	// encCdc := app.MakeTestEncodingConfig()
-	encoding := cosmoscmd.MakeEncodingConfig(appProvider.ModuleBasics)
-	testApp := appProvider.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{}).(ibctesting.TestingApp)
-	return testApp, appProvider.NewDefaultGenesisState(encoding.Marshaler)
+func consensusParams() *abci.ConsensusParams {
+	return &abci.ConsensusParams{
+		Block: &abci.BlockParams{
+			MaxBytes: 9223372036854775807,
+			MaxGas:   9223372036854775807,
+		},
+		Evidence: &tmproto.EvidenceParams{
+			MaxAgeNumBlocks: 302400,
+			MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
+			MaxBytes:        10000,
+		},
+		Validator: &tmproto.ValidatorParams{
+			PubKeyTypes: []string{
+				tmtypes.ABCIPubKeyTypeEd25519,
+			},
+		},
+	}
 }
