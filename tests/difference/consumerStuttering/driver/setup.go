@@ -9,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	appProvider "github.com/cosmos/interchain-security/app/provider"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
-	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 	"github.com/tendermint/spm/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -27,18 +26,17 @@ type Runner struct {
 }
 
 func NewRunner(t *testing.T, initState State) *Runner {
-	stakingKeeper := appProvider.NewSpecialStakingKeeper()
+	// stakingKeeper := appProvider.NewSpecialStakingKeeper()
 
-	providerKeeper, ctx := Alternative(t, stakingKeeper)
+	app, ctx := AppAndCtx(t)
 
-	r := Runner{t, &ctx, &providerKeeper, stakingKeeper, initState}
+	r := Runner{t, &ctx, &app.ProviderKeeper, app.StakingKeeper.(*appProvider.SpecialStakingKeeper), initState}
 	_ = r
 
 	return &r
 }
 
-func Alternative(t testing.TB,
-	stakingKeeper ccv.StakingKeeper) (providerkeeper.Keeper, sdk.Context) {
+func AppAndCtx(t testing.TB) (*appProvider.App, sdk.Context) {
 
 	chainID := "testchain0"
 

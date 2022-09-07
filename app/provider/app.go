@@ -344,13 +344,14 @@ func New(
 		keys[feegrant.StoreKey],
 		app.AccountKeeper,
 	)
-	stakingKeeper := stakingkeeper.NewKeeper(
-		appCodec,
-		keys[stakingtypes.StoreKey],
-		app.AccountKeeper,
-		app.BankKeeper,
-		app.GetSubspace(stakingtypes.ModuleName),
-	)
+	// stakingKeeper := stakingkeeper.NewKeeper(
+	// appCodec,
+	// keys[stakingtypes.StoreKey],
+	// app.AccountKeeper,
+	// app.BankKeeper,
+	// app.GetSubspace(stakingtypes.ModuleName),
+	// )
+	stakingKeeper := NewSpecialStakingKeeper()
 	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec,
 		keys[minttypes.StoreKey],
@@ -426,8 +427,7 @@ func New(
 		&app.IBCKeeper.PortKeeper,
 		app.IBCKeeper.ConnectionKeeper,
 		app.IBCKeeper.ClientKeeper,
-		// app.StakingKeeper,
-		NewSpecialStakingKeeper(),
+		app.StakingKeeper,
 		app.SlashingKeeper,
 		app.AccountKeeper,
 		authtypes.FeeCollectorName,
