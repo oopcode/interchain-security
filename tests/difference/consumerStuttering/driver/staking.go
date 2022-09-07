@@ -46,6 +46,9 @@ func (k *SpecialStakingKeeper) UnbondingCanComplete(ctx sdk.Context, id uint64) 
 	k.RefCnt[id] -= 1
 	return nil
 }
+func (k *SpecialStakingKeeper) GetHistoricalInfo(ctx sdk.Context, height int64) (stakingtypes.HistoricalInfo, bool) {
+	return stakingtypes.HistoricalInfo{}, false
+}
 func (k *SpecialStakingKeeper) UnbondingTime(ctx sdk.Context) time.Duration {
 	return 0
 }
