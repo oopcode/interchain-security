@@ -21,7 +21,7 @@ type Runner struct {
 	t         *testing.T
 	ctx       *sdk.Context
 	k         *providerkeeper.Keeper
-	sk        *appProvider.SpecialStakingKeeper
+	sk        *SpecialStakingKeeper
 	lastState State
 }
 
