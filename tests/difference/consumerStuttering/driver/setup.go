@@ -7,10 +7,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	appProvider "github.com/cosmos/interchain-security/app/provider"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 	"github.com/tendermint/spm/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -76,23 +74,22 @@ func createTestingApp() (*appProvider.App, map[string]json.RawMessage) {
 	encoding := cosmoscmd.MakeEncodingConfig(appProvider.ModuleBasics)
 	app := appProvider.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{}).(*appProvider.App)
 
-	k := providerkeeper.NewKeeper(
-		app.AppCodec(),
-		sdk.NewKVStoreKey(providertypes.StoreKey),
-		app.GetSubspace(providertypes.ModuleName),
-		app.ScopedIBCProviderKeeper,
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.IBCKeeper.ConnectionKeeper,
-		app.IBCKeeper.ClientKeeper,
-		// NewSpecialStakingKeeper(),
-		app.StakingKeeper,
-		app.SlashingKeeper,
-		app.AccountKeeper,
-		authtypes.FeeCollectorName,
-	)
+	// k := providerkeeper.NewKeeper(
+	// 	app.AppCodec(),
+	// 	sdk.NewKVStoreKey(providertypes.StoreKey),
+	// 	app.GetSubspace(providertypes.ModuleName),
+	// 	app.ScopedIBCProviderKeeper,
+	// 	app.IBCKeeper.ChannelKeeper,
+	// 	&app.IBCKeeper.PortKeeper,
+	// 	app.IBCKeeper.ConnectionKeeper,
+	// 	app.IBCKeeper.ClientKeeper,
+	// 	// NewSpecialStakingKeeper(),
+	// 	app.StakingKeeper,
+	// 	app.SlashingKeeper,
+	// 	app.AccountKeeper,
+	// 	authtypes.FeeCollectorName,
+	// )
 
-	_ = k
 	// app.ProviderKeeper = k
 
 	return app, appProvider.NewDefaultGenesisState(encoding.Marshaler)
