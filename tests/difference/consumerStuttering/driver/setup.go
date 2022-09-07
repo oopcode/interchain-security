@@ -94,6 +94,7 @@ func SetupApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	encoding := cosmoscmd.MakeEncodingConfig(appProvider.ModuleBasics)
 	// TODO: figure out a way to set a mock staking module
 	testApp := appProvider.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, simapp.DefaultNodeHome, 5, encoding, simapp.EmptyAppOptions{}).(abci.Application)
+	//
 	return testApp, appProvider.NewDefaultGenesisState(encoding.Marshaler)
 }
 
