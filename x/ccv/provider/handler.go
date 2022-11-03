@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/interchain-security/x/ccv/provider/types"
 )
 
-func NewHandler(k keeper.Keeper) sdk.Handler {
+func NewHandler(k *keeper.Keeper) sdk.Handler {
 	msgServer := keeper.NewMsgServerImpl(k)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {

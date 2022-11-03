@@ -19,7 +19,7 @@ import (
 
 func TestInvalidMsg(t *testing.T) {
 	k, _, _, _ := testkeeper.GetProviderKeeperAndCtx(t, testkeeper.NewInMemKeeperParams(t))
-	handler := NewHandler(k)
+	handler := NewHandler(&k)
 	res, err := handler(sdk.NewContext(nil, tmproto.Header{}, false, nil), testdata.NewTestMsg())
 	require.Error(t, err)
 	require.Nil(t, res)
@@ -118,7 +118,7 @@ func TestDesignateConsensusKeyForConsumerChain(t *testing.T) {
 		require.NoError(t, err)
 
 		// Try to handle the message
-		_, err = NewHandler(k)(ctx, msg)
+		_, err = NewHandler(&k)(ctx, msg)
 
 		if tc.expError {
 			require.Error(t, err, "invalid case did not return error")
