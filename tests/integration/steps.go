@@ -15,9 +15,9 @@ func concatSteps(steps ...[]Step) []Step {
 
 var happyPathSteps = concatSteps(
 	stepsStartChains("consu", false),
-	stepsDelegate("consu"),
-	stepsUnbondRedelegate("consu"),
-	stepsDowntime("consu"),
+	// stepsDelegate("consu"),
+	// stepsUnbondRedelegate("consu"),
+	// stepsDowntime("consu"),
 )
 
 var democracySteps = concatSteps(
