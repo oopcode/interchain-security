@@ -148,9 +148,9 @@ func CmdConsumerStopProposals() *cobra.Command {
 
 func CmdConsumerValidatorKeyAssignment() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "TODO:",
-		Short: "TODO:",
-		Long:  `TODO:`,
+		Use:   "assigned-validator-key [chainid] [provider-validator-address]",
+		Short: "Query assigned validator consensus public key for a consumer chain",
+		Long:  `Returns the currently assigned validator consensus public key for a consumer chain, if one has been assigned.`,
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientQueryContext(cmd)
