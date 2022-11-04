@@ -458,13 +458,7 @@ func (b *Builder) createConsumerGenesis(tmConfig *ibctesting.TendermintConfig) *
 		consumertypes.DefaultConsumerUnbondingPeriod,
 	)
 
-	// For each update, assign a default key assignment from provider key to provider key.
-	// In this manner the default behavior is for the consumer to be assigned the same consensus
-	// key as is used on the provider, for a given validator.
-	for _, u := range valUpdates {
-		b.providerKeeper().KeyAssignment(b.ctx(P), b.chainID(C)).SetProviderPubKeyToConsumerPubKey(u.PubKey, u.PubKey)
-	}
-	b.providerKeeper().KeyAssignment(b.ctx(P), b.chainID(C)).ComputeUpdates(0, valUpdates)
+	b.providerKeeper().KeyAssignment(b.ctx(P), b.chainID(C)).AssignDefaultsAndComputeUpdates(0, valUpdates)
 
 	return consumertypes.NewInitialGenesisState(providerClient, providerConsState, valUpdates, consumertypes.SlashRequests{}, params)
 }

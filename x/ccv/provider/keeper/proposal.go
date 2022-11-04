@@ -248,25 +248,20 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 		})
 	}
 
-	// TODO: need to make sure all of this is consistent
+	consumerUpdates := k.KeyAssignment(ctx, chainID).AssignDefaultsAndComputeUpdates(0, providerUpdates)
 
-	// Assign consumer chain consensus keys for each validator by taking the provider chain key as default
+	////////////////
+	fmt.Println("provider updates")
 	for _, u := range providerUpdates {
-		if _, found := k.KeyAssignment(ctx, chainID).GetCurrentConsumerPubKeyFromProviderPubKey(u.PubKey); !found {
-			// The provider has not designated a key to use for the consumer chain. Use the provider key
-			// by default.
-			k.KeyAssignment(ctx, chainID).SetProviderPubKeyToConsumerPubKey(u.PubKey, u.PubKey)
-		}
+		fmt.Println(u.PubKey.String(), u.Power)
 	}
+	fmt.Println("consumer updates")
+	for _, u := range consumerUpdates {
+		fmt.Println(u.PubKey.String(), u.Power)
+	}
+	////////////////
 
-	// Store memos for the updates so that future validator power updates can be made consistent
-	// with any future changes to the key assignment.
-
-	// TODO: look at this again
-	// consumerUpdates := k.KeyAssignment(ctx, chainID).ComputeUpdates(0, providerUpdates)
-	k.KeyAssignment(ctx, chainID).ComputeUpdates(0, providerUpdates)
-
-	gen.InitialValSet = providerUpdates
+	gen.InitialValSet = consumerUpdates
 
 	return gen, nil
 }

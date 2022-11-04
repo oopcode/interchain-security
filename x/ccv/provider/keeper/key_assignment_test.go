@@ -24,13 +24,13 @@ func key(seed int) tmprotocrypto.PublicKey {
 
 // Num traces to run for heuristic testing
 // About 1.5 secs per trace when using real store
-const NUM_TRACES = 4000
+const NUM_TRACES = 2000
 
 // Len of trace for a single heuristic testing run
 const TRACE_LEN = 400
 
 // Number of validators to simulate
-const NUM_VALS = 4
+const NUM_VALS = 12
 
 // Number of consumer keys in the universe
 // (This is constrained to ensure overlap edge cases are tested)

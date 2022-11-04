@@ -263,6 +263,21 @@ func (ka *KeyAssignment) ComputeUpdates(vscid VSCID, stakingUpdates []abci.Valid
 	return fromMap(ka.getConsumerUpdates(vscid, toMap(stakingUpdates)))
 }
 
+func (ka *KeyAssignment) AssignDefaultsForProviderKeysWithoutExplicitAssignments(updates []abci.ValidatorUpdate) {
+	for _, u := range updates {
+		if _, found := ka.GetCurrentConsumerPubKeyFromProviderPubKey(u.PubKey); !found {
+			// The provider has not designated a key to use for the consumer chain. Use the provider key
+			// by default.
+			ka.SetProviderPubKeyToConsumerPubKey(u.PubKey, u.PubKey)
+		}
+	}
+}
+
+func (ka *KeyAssignment) AssignDefaultsAndComputeUpdates(vscid VSCID, stakingUpdates []abci.ValidatorUpdate) (consumerUpdates []abci.ValidatorUpdate) {
+	ka.AssignDefaultsForProviderKeysWithoutExplicitAssignments(stakingUpdates)
+	return ka.ComputeUpdates(vscid, stakingUpdates)
+}
+
 // Returns true iff internal invariants hold
 func (ka *KeyAssignment) InternalInvariants() bool {
 
