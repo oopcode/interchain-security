@@ -17,6 +17,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // HandleConsumerAdditionProposal will receive the consumer chain's client state from the proposal.
@@ -54,6 +55,15 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 		return nil
 	}
 
+	consumerGen, nextValHash, err := k.MakeConsumerGenesis(ctx, chainID)
+	if err != nil {
+		return err
+	}
+	err = k.SetConsumerGenesis(ctx, chainID, consumerGen)
+	if err != nil {
+		return err
+	}
+
 	// Consumers always start out with the default unbonding period
 	consumerUnbondingPeriod := consumertypes.DefaultConsumerUnbondingPeriod
 
@@ -68,7 +78,8 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 	consensusState := ibctmtypes.NewConsensusState(
 		ctx.BlockTime(),
 		commitmenttypes.NewMerkleRoot([]byte(ibctmtypes.SentinelRoot)),
-		ctx.BlockHeader().NextValidatorsHash,
+		// ctx.BlockHeader().NextValidatorsHash,
+		nextValHash,
 	)
 
 	clientID, err := k.clientKeeper.CreateClient(ctx, clientState, consensusState)
@@ -76,15 +87,6 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 		return err
 	}
 	k.SetConsumerClientId(ctx, chainID, clientID)
-
-	consumerGen, err := k.MakeConsumerGenesis(ctx, chainID)
-	if err != nil {
-		return err
-	}
-	err = k.SetConsumerGenesis(ctx, chainID, consumerGen)
-	if err != nil {
-		return err
-	}
 
 	// add the init timeout timestamp for this consumer chain
 	ts := ctx.BlockTime().Add(k.GetParams(ctx).InitTimeoutPeriod)
@@ -195,7 +197,7 @@ func (k Keeper) StopConsumerChain(ctx sdk.Context, chainID string, lockUbd, clos
 }
 
 // MakeConsumerGenesis constructs a consumer genesis state.
-func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consumertypes.GenesisState, err error) {
+func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consumertypes.GenesisState, nextValidatorsHash []byte, err error) {
 	providerUnbondingPeriod := k.stakingKeeper.UnbondingTime(ctx)
 	height := clienttypes.GetSelfHeight(ctx)
 
@@ -207,7 +209,7 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 
 	consState, err := k.clientKeeper.GetSelfConsensusState(ctx, height)
 	if err != nil {
-		return gen, sdkerrors.Wrapf(clienttypes.ErrConsensusStateNotFound, "error %s getting self consensus state for: %s", err, height)
+		return gen, nil, sdkerrors.Wrapf(clienttypes.ErrConsensusStateNotFound, "error %s getting self consensus state for: %s", err, height)
 	}
 
 	gen = *consumertypes.DefaultGenesisState()
@@ -261,10 +263,31 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	// }
 	////////////////
 
-	gen.InitialValSet = consumerUpdates
-	gen.InitialValSet = providerUpdates
+	/// GUESS 1
+	// gen.InitialValSet = consumerUpdates
+	// gen.InitialValSet = providerUpdates
+	// valList, err := tmtypes.PB2TM.ValidatorUpdates(consumerUpdates)
+	// // TODO: I don't think this will work entirely.
+	// vals := tmtypes.NewValidatorSet(valList)
+	// nextValidatorsHash = vals.Hash()
 
-	return gen, nil
+	/// GUESS 2, see tendermint.state.execution.go
+	/// NOTE: NewValidatorSet actually does UpdateWithChangeSet
+	// and incrementProposer priority
+	gen.InitialValSet = consumerUpdates
+	validatorUpdates, err := tmtypes.PB2TM.ValidatorUpdates(consumerUpdates)
+	if err != nil {
+		panic("bad0")
+	}
+	nValSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{})
+	err = nValSet.UpdateWithChangeSet(validatorUpdates)
+	if err != nil {
+		panic("bad1")
+	}
+	nValSet.IncrementProposerPriority(1)
+
+	nextValidatorsHash = nValSet.Hash()
+	return gen, nextValidatorsHash, nil
 }
 
 // SetPendingConsumerAdditionProp stores a pending proposal to create a consumer chain client
