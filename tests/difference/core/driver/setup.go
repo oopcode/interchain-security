@@ -68,19 +68,11 @@ func (b *Builder) otherID(chainID string) string {
 }
 
 func (b *Builder) chain(chain string) *ibctesting.TestChain {
-	return map[string]*ibctesting.TestChain{P: b.providerChain(), C: b.consumerChain()}[chain]
-}
-
-func (b *Builder) providerChain() *ibctesting.TestChain {
-	return b.coordinator.GetChain(ibctesting.GetChainID(0))
-}
-
-func (b *Builder) consumerChain() *ibctesting.TestChain {
-	return b.coordinator.GetChain(ibctesting.GetChainID(1))
+	return b.coordinator.GetChain(b.chainID(chain))
 }
 
 func (b *Builder) providerApp() *appProvider.App {
-	return b.providerChain().App.(*appProvider.App)
+	return b.chain(P).App.(*appProvider.App)
 }
 
 func (b *Builder) providerStakingKeeper() stakingkeeper.Keeper {
@@ -96,7 +88,7 @@ func (b *Builder) providerKeeper() providerkeeper.Keeper {
 }
 
 func (b *Builder) consumerKeeper() consumerkeeper.Keeper {
-	return b.consumerChain().App.(*appConsumer.App).ConsumerKeeper
+	return b.chain(C).App.(*appConsumer.App).ConsumerKeeper
 }
 
 func (b *Builder) endpointFromID(chainID string) *ibctesting.Endpoint {
@@ -104,7 +96,7 @@ func (b *Builder) endpointFromID(chainID string) *ibctesting.Endpoint {
 }
 
 func (b *Builder) endpoint(chain string) *ibctesting.Endpoint {
-	return map[string]*ibctesting.Endpoint{P: b.path.EndpointB, C: b.path.EndpointA}[chain]
+	return b.endpointFromID(b.chainID(chain))
 }
 
 func (b *Builder) validator(i int64) sdk.ValAddress {
@@ -385,7 +377,7 @@ func (b *Builder) ensureValidatorLexicographicOrderingMatchesModel() {
 // delegate is used to delegate tokens to newly created
 // validators in the setup process.
 func (b *Builder) delegate(del int, val sdk.ValAddress, amt int64) {
-	d := b.providerChain().SenderAccounts[del].SenderAccount.GetAddress()
+	d := b.chain(P).SenderAccounts[del].SenderAccount.GetAddress()
 	coins := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(amt))
 	msg := stakingtypes.NewMsgDelegate(d, val, coins)
 	pskServer := stakingkeeper.NewMsgServerImpl(b.providerStakingKeeper())
@@ -411,8 +403,8 @@ func (b *Builder) addExtraValidators() {
 			testVal := b.getTestValidator(i)
 			b.addValidatorToStakingModule(testVal)
 			b.valAddresses = append(b.valAddresses, testVal.SDKValAddress())
-			b.providerChain().Signers[testVal.SDKValAddressString()] = testVal
-			b.consumerChain().Signers[testVal.SDKValAddressString()] = testVal
+			b.chain(P).Signers[testVal.SDKValAddressString()] = testVal
+			b.chain(C).Signers[testVal.SDKValAddressString()] = testVal
 		}
 	}
 
@@ -442,13 +434,13 @@ func (b *Builder) createConsumerGenesis(tmConfig *ibctesting.TendermintConfig) *
 	// Create Provider client
 	providerClient := ibctmtypes.NewClientState(
 		b.chainID(P), tmConfig.TrustLevel, tmConfig.TrustingPeriod, tmConfig.UnbondingPeriod, tmConfig.MaxClockDrift,
-		b.providerChain().LastHeader.GetHeight().(clienttypes.Height), commitmenttypes.GetSDKSpecs(),
+		b.chain(P).LastHeader.GetHeight().(clienttypes.Height), commitmenttypes.GetSDKSpecs(),
 		[]string{"upgrade", "upgradedIBCState"}, tmConfig.AllowUpdateAfterExpiry, tmConfig.AllowUpdateAfterMisbehaviour,
 	)
-	providerConsState := b.providerChain().LastHeader.ConsensusState()
+	providerConsState := b.chain(P).LastHeader.ConsensusState()
 
 	// Create Consumer genesis
-	valUpdates := tmtypes.TM2PB.ValidatorUpdates(b.providerChain().Vals)
+	valUpdates := tmtypes.TM2PB.ValidatorUpdates(b.chain(P).Vals)
 	params := consumertypes.NewParams(
 		true,
 		1000, // ignore distribution
@@ -478,7 +470,7 @@ func (b *Builder) createLink() {
 
 func (b *Builder) configureIBC() {
 	// Configure the ibc path
-	b.path = ibctesting.NewPath(b.consumerChain(), b.providerChain())
+	b.path = ibctesting.NewPath(b.chain(C), b.chain(P))
 	b.endpoint(C).ChannelConfig.PortID = ccv.ConsumerPortID
 	b.endpoint(P).ChannelConfig.PortID = ccv.ProviderPortID
 	b.endpoint(C).ChannelConfig.Version = ccv.Version
@@ -517,7 +509,7 @@ func (b *Builder) setConsumerClientOnProvider() {
 // to the consumer. This is necessary to complete the handshake, and thus
 // match the model init state, without any additional validator power changes.
 func (b *Builder) sendEmptyVSCPacketToFinishHandshake() {
-	vscID := b.providerKeeper().GetValidatorSetUpdateId(b.providerChain().GetContext())
+	vscID := b.providerKeeper().GetValidatorSetUpdateId(b.chain(P).GetContext())
 
 	timeout := uint64(b.chain(P).CurrentHeader.Time.Add(ccv.DefaultCCVTimeoutPeriod).UnixNano())
 
@@ -661,7 +653,7 @@ func (b *Builder) build() {
 	b.addExtraValidators()
 
 	// Commit the additional validators
-	b.coordinator.CommitBlock(b.providerChain())
+	b.coordinator.CommitBlock(b.chain(P))
 
 	b.setProviderSlashParams()
 
