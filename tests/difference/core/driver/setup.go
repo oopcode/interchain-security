@@ -651,13 +651,11 @@ func (b *Builder) endBlock(chainID string) {
 func (b *Builder) build() {
 
 	b.createChains()
-
+	b.setProviderSlashParams()
 	b.addExtraValidators()
 
 	// Commit the additional validators
 	b.coordinator.CommitBlock(b.chain(P))
-
-	b.setProviderSlashParams()
 
 	// Set light client params to match model
 	tmConfig := ibctesting.NewTendermintConfig()
@@ -668,9 +666,6 @@ func (b *Builder) build() {
 	// Init consumer
 	b.consumerKeeper().InitGenesis(b.ctx(C), b.createConsumerGenesis(tmConfig))
 
-	// Create a simulated network link link
-	b.createLink()
-
 	// Set the unbonding time on the consumer to the model value
 	b.consumerKeeper().SetUnbondingPeriod(b.ctx(C), b.initState.UnbondingC)
 
@@ -678,6 +673,8 @@ func (b *Builder) build() {
 	b.setProviderClientOnConsumer()
 	b.setConsumerClientOnProvider()
 
+	// Create a simulated network link
+	b.createLink()
 	// Handshake
 	b.coordinator.CreateConnections(b.path)
 	b.coordinator.CreateChannels(b.path)
