@@ -55,7 +55,8 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 		return nil
 	}
 
-	consumerGen, nextValHash, err := k.MakeConsumerGenesis(ctx, chainID)
+	consumerGen, _, err := k.MakeConsumerGenesis(ctx, chainID)
+
 	if err != nil {
 		return err
 	}
@@ -78,8 +79,8 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 	consensusState := ibctmtypes.NewConsensusState(
 		ctx.BlockTime(),
 		commitmenttypes.NewMerkleRoot([]byte(ibctmtypes.SentinelRoot)),
-		// ctx.BlockHeader().NextValidatorsHash,
-		nextValHash,
+		ctx.BlockHeader().NextValidatorsHash,
+		// nextValHash,
 	)
 
 	clientID, err := k.clientKeeper.CreateClient(ctx, clientState, consensusState)
@@ -275,6 +276,7 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	/// NOTE: NewValidatorSet actually does UpdateWithChangeSet
 	// and incrementProposer priority
 	gen.InitialValSet = consumerUpdates
+	gen.InitialValSet = providerUpdates
 	validatorUpdates, err := tmtypes.PB2TM.ValidatorUpdates(consumerUpdates)
 	if err != nil {
 		panic("bad0")
@@ -287,6 +289,9 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	nValSet.IncrementProposerPriority(1)
 
 	nextValidatorsHash = nValSet.Hash()
+
+	fmt.Println("BlockHeader():", string(ctx.BlockHeader().NextValidatorsHash))
+	fmt.Println("computed     :", string(nextValidatorsHash))
 	return gen, nextValidatorsHash, nil
 }
 

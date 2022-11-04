@@ -95,6 +95,9 @@ func (gs GenesisState) Validate() error {
 		if err != nil {
 			return sdkerrors.Wrap(err, "could not convert val updates to validator set")
 		}
+		/////////!!!!
+		// TODO: this will also have to change for key assignment
+		/////////
 		valSet := tmtypes.NewValidatorSet(vals)
 		if !bytes.Equal(gs.ProviderConsensusState.NextValidatorsHash, valSet.Hash()) {
 			return sdkerrors.Wrap(ccv.ErrInvalidGenesis, "initial validators does not hash to NextValidatorsHash on provider client")

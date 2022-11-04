@@ -68,6 +68,10 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state *consumertypes.GenesisState) 
 		}
 		valSet := tmtypes.NewValidatorSet(vals)
 
+		//// !!!!!!!!!
+		// TODO: THIS WILL HAVE TO BE CHANGED FOR KEY ASSIGNMENT
+		//// !!!!!!!!!
+
 		if !bytes.Equal(tmConsState.NextValidatorsHash, valSet.Hash()) {
 			panic("initial validator set does not match last consensus state of the provider client")
 		}
