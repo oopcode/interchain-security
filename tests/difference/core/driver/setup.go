@@ -79,16 +79,20 @@ func (b *Builder) consumerChain() *ibctesting.TestChain {
 	return b.coordinator.GetChain(ibctesting.GetChainID(1))
 }
 
+func (b *Builder) providerApp() *appProvider.App {
+	return b.providerChain().App.(*appProvider.App)
+}
+
 func (b *Builder) providerStakingKeeper() stakingkeeper.Keeper {
-	return b.providerChain().App.(*appProvider.App).StakingKeeper
+	return b.providerApp().StakingKeeper
 }
 
 func (b *Builder) providerSlashingKeeper() slashingkeeper.Keeper {
-	return b.providerChain().App.(*appProvider.App).SlashingKeeper
+	return b.providerApp().SlashingKeeper
 }
 
 func (b *Builder) providerKeeper() providerkeeper.Keeper {
-	return b.providerChain().App.(*appProvider.App).ProviderKeeper
+	return b.providerApp().ProviderKeeper
 }
 
 func (b *Builder) consumerKeeper() consumerkeeper.Keeper {
@@ -332,7 +336,6 @@ func (b *Builder) createChains() {
 
 	b.coordinator = coordinator
 	b.valAddresses = sdkValAddresses
-
 }
 
 // setSigningInfos sets the validator signing info in the provider Slashing module
@@ -438,7 +441,7 @@ func (b *Builder) setProviderSlashParams() {
 func (b *Builder) createConsumerGenesis(tmConfig *ibctesting.TendermintConfig) *consumertypes.GenesisState {
 	// Create Provider client
 	providerClient := ibctmtypes.NewClientState(
-		b.providerChain().ChainID, tmConfig.TrustLevel, tmConfig.TrustingPeriod, tmConfig.UnbondingPeriod, tmConfig.MaxClockDrift,
+		b.chainID(P), tmConfig.TrustLevel, tmConfig.TrustingPeriod, tmConfig.UnbondingPeriod, tmConfig.MaxClockDrift,
 		b.providerChain().LastHeader.GetHeight().(clienttypes.Height), commitmenttypes.GetSDKSpecs(),
 		[]string{"upgrade", "upgradedIBCState"}, tmConfig.AllowUpdateAfterExpiry, tmConfig.AllowUpdateAfterMisbehaviour,
 	)
@@ -507,7 +510,7 @@ func (b *Builder) setConsumerClientOnProvider() {
 	b.suite.Require().NoError(err)
 
 	// Create the Consumer chain ID mapping in the provider state
-	b.providerKeeper().SetConsumerClientId(b.ctx(P), b.consumerChain().ChainID, b.endpoint(P).ClientID)
+	b.providerKeeper().SetConsumerClientId(b.ctx(P), b.chainID(C), b.endpoint(P).ClientID)
 }
 
 // Manually construct and send an empty VSC packet from the provider
@@ -524,7 +527,7 @@ func (b *Builder) sendEmptyVSCPacketToFinishHandshake() {
 		nil,
 	)
 
-	seq, ok := b.providerChain().App.(*appProvider.App).GetIBCKeeper().ChannelKeeper.GetNextSequenceSend(
+	seq, ok := b.providerApp().GetIBCKeeper().ChannelKeeper.GetNextSequenceSend(
 		b.ctx(P), ccv.ProviderPortID, b.endpoint(P).ChannelID)
 
 	b.suite.Require().True(ok)
@@ -532,9 +535,9 @@ func (b *Builder) sendEmptyVSCPacketToFinishHandshake() {
 	packet := channeltypes.NewPacket(pd.GetBytes(), seq, ccv.ProviderPortID, b.endpoint(P).ChannelID,
 		ccv.ConsumerPortID, b.endpoint(C).ChannelID, clienttypes.Height{}, timeout)
 
-	channelCap := b.endpoint(P).Chain.GetChannelCapability(packet.GetSourcePort(), packet.GetSourceChannel())
+	channelCap := b.chain(P).GetChannelCapability(packet.GetSourcePort(), packet.GetSourceChannel())
 
-	err := b.endpoint(P).Chain.App.GetIBCKeeper().ChannelKeeper.SendPacket(b.ctx(P), channelCap, packet)
+	err := b.providerApp().GetIBCKeeper().ChannelKeeper.SendPacket(b.ctx(P), channelCap, packet)
 
 	b.suite.Require().NoError(err)
 
