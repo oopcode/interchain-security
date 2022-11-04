@@ -456,7 +456,7 @@ func (b *Builder) createConsumerGenesis(tmConfig *ibctesting.TendermintConfig) *
 		consumertypes.DefaultTransferTimeoutPeriod,
 		consumertypes.DefaultConsumerRedistributeFrac,
 		consumertypes.DefaultHistoricalEntries,
-		consumertypes.DefaultConsumerUnbondingPeriod,
+		initState.UnbondingC,
 	)
 
 	b.providerKeeper().KeyAssignment(b.ctx(P), b.chainID(C)).AssignDefaultsAndComputeUpdates(0, valUpdates)
@@ -474,7 +474,7 @@ func (b *Builder) createLink() {
 	}
 }
 
-func (b *Builder) configureIBC() {
+func (b *Builder) configureIBCSimulation() {
 	// Configure the ibc path
 	b.path = ibctesting.NewPath(b.chain(C), b.chain(P))
 	b.endpoint(C).ChannelConfig.PortID = ccv.ConsumerPortID
@@ -483,9 +483,6 @@ func (b *Builder) configureIBC() {
 	b.endpoint(P).ChannelConfig.Version = ccv.Version
 	b.endpoint(C).ChannelConfig.Order = channeltypes.ORDERED
 	b.endpoint(P).ChannelConfig.Order = channeltypes.ORDERED
-}
-
-func (b *Builder) setProviderClientOnConsumer() {
 	providerClientID, ok := b.consumerKeeper().GetProviderClientID(b.ctx(C))
 	b.suite.Require().True(ok)
 	b.endpoint(C).ClientID = providerClientID
@@ -664,13 +661,9 @@ func (b *Builder) build() {
 	tmConfig.MaxClockDrift = b.initState.MaxClockDrift
 
 	// Init consumer
-	b.consumerKeeper().InitGenesis(b.ctx(C), b.createConsumerGenesis(tmConfig))
-
-	// Set the unbonding time on the consumer to the model value
-	b.consumerKeeper().SetUnbondingPeriod(b.ctx(C), b.initState.UnbondingC)
-
-	b.configureIBC()
-	b.setProviderClientOnConsumer()
+	consumerGenesis := b.createConsumerGenesis(tmConfig)
+	b.consumerKeeper().InitGenesis(b.ctx(C), consumerGenesis)
+	b.configureIBCSimulation()
 	b.setConsumerClientOnProvider()
 
 	// Create a simulated network link
