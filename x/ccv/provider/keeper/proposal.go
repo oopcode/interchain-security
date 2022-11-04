@@ -251,14 +251,14 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	consumerUpdates := k.KeyAssignment(ctx, chainID).AssignDefaultsAndComputeUpdates(0, providerUpdates)
 
 	////////////////
-	fmt.Println("provider updates")
-	for _, u := range providerUpdates {
-		fmt.Println(u.PubKey.String(), u.Power)
-	}
-	fmt.Println("consumer updates")
-	for _, u := range consumerUpdates {
-		fmt.Println(u.PubKey.String(), u.Power)
-	}
+	// fmt.Println("provider updates")
+	// for _, u := range providerUpdates {
+	// 	fmt.Println(u.PubKey.String(), u.Power)
+	// }
+	// fmt.Println("consumer updates")
+	// for _, u := range consumerUpdates {
+	// 	fmt.Println(u.PubKey.String(), u.Power)
+	// }
 	////////////////
 
 	gen.InitialValSet = consumerUpdates
