@@ -436,7 +436,7 @@ func (b *Builder) setProviderSlashParams() {
 	b.providerSlashingKeeper().SetParams(b.ctx(P), sparams)
 }
 
-func (b *Builder) createConsumerGenesis(tmConfig *ibctesting.TendermintConfig) *consumertypes.GenesisState {
+func (b *Builder) createConsumerGenesisWithProviderClient(tmConfig *ibctesting.TendermintConfig) *consumertypes.GenesisState {
 	// Create Provider client
 	providerClient := ibctmtypes.NewClientState(
 		b.chainID(P), tmConfig.TrustLevel, tmConfig.TrustingPeriod, tmConfig.UnbondingPeriod, tmConfig.MaxClockDrift,
@@ -661,7 +661,7 @@ func (b *Builder) build() {
 	tmConfig.MaxClockDrift = b.initState.MaxClockDrift
 
 	// Init consumer
-	consumerGenesis := b.createConsumerGenesis(tmConfig)
+	consumerGenesis := b.createConsumerGenesisWithProviderClient(tmConfig)
 	b.consumerKeeper().InitGenesis(b.ctx(C), consumerGenesis)
 	b.configureIBCSimulation()
 	b.setConsumerClientOnProvider()
