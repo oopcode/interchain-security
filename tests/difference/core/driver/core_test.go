@@ -538,7 +538,7 @@ func (s *CoreSuite) executeTraces() {
 	for i := range s.traces.Data {
 		s.Run(fmt.Sprintf("Trace num: %d", i), func() {
 			// Setup a new pair of chains for each trace
-			s.SetupTest()
+			s.SetupOneTest()
 
 			s.traces.CurrentTraceIx = i
 			defer func() {
@@ -580,9 +580,9 @@ func TestCoreSuite(t *testing.T) {
 	suite.Run(t, new(CoreSuite))
 }
 
-// SetupTest sets up the test suite in a 'zero' state which matches
-// the initial state in the model.
-func (s *CoreSuite) SetupTest() {
+// SetupOneTest sets up the test suite in a 'zero' state which matches
+// the initial state in the model. Not the test suite setup method!
+func (s *CoreSuite) SetupOneTest() {
 	state := initState
 	path, valAddresses, offsetHeight, offsetTimeUnix, providerVscID := GetZeroState(&s.Suite, state)
 	s.valAddresses = valAddresses
