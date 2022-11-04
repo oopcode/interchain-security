@@ -487,28 +487,24 @@ func (b *Builder) configureIBC() {
 
 func (b *Builder) setProviderClientOnConsumer() {
 	providerClientID, ok := b.consumerKeeper().GetProviderClientID(b.ctx(C))
-	if !ok {
-		panic("must already have provider client on consumer chain")
-	}
+	b.suite.Require().True(ok)
 	b.endpoint(C).ClientID = providerClientID
 	err := b.endpoint(P).Chain.SenderAccount.SetAccountNumber(6)
 	b.suite.Require().NoError(err)
 }
 
 func (b *Builder) setConsumerClientOnProvider() {
-	err := b.endpoint(C).Chain.SenderAccount.SetAccountNumber(1)
-	b.suite.Require().NoError(err)
-
 	// Configure and create the consumer Client
 	tmConfig := b.endpoint(P).ClientConfig.(*ibctesting.TendermintConfig)
 	tmConfig.UnbondingPeriod = b.initState.UnbondingC
 	tmConfig.TrustingPeriod = b.initState.Trusting
 	tmConfig.MaxClockDrift = b.initState.MaxClockDrift
-	err = b.endpoint(P).CreateClient()
+	err := b.endpoint(P).CreateClient()
 	b.suite.Require().NoError(err)
-
 	// Create the Consumer chain ID mapping in the provider state
 	b.providerKeeper().SetConsumerClientId(b.ctx(P), b.chainID(C), b.endpoint(P).ClientID)
+	err = b.endpoint(C).Chain.SenderAccount.SetAccountNumber(1)
+	b.suite.Require().NoError(err)
 }
 
 // Manually construct and send an empty VSC packet from the provider
