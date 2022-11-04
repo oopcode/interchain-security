@@ -60,11 +60,17 @@ func (b *Builder) ctx(chain string) sdk.Context {
 }
 
 func (b *Builder) chainID(chain string) string {
-	return map[string]string{P: ibctesting.GetChainID(0), C: ibctesting.GetChainID(1)}[chain]
+	if chain == P {
+		return ibctesting.GetChainID(0)
+	}
+	return ibctesting.GetChainID(1)
 }
 
 func (b *Builder) otherID(chainID string) string {
-	return map[string]string{ibctesting.GetChainID(0): ibctesting.GetChainID(1), ibctesting.GetChainID(1): ibctesting.GetChainID(0)}[chainID]
+	if chainID == b.chainID(P) {
+		return b.chainID(C)
+	}
+	return b.chainID(P)
 }
 
 func (b *Builder) chain(chain string) *ibctesting.TestChain {
@@ -509,7 +515,7 @@ func (b *Builder) setConsumerClientOnProvider() {
 // to the consumer. This is necessary to complete the handshake, and thus
 // match the model init state, without any additional validator power changes.
 func (b *Builder) sendEmptyVSCPacketToFinishHandshake() {
-	vscID := b.providerKeeper().GetValidatorSetUpdateId(b.chain(P).GetContext())
+	vscID := b.providerKeeper().GetValidatorSetUpdateId(b.ctx(P))
 
 	timeout := uint64(b.chain(P).CurrentHeader.Time.Add(ccv.DefaultCCVTimeoutPeriod).UnixNano())
 
