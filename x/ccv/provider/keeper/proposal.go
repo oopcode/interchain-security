@@ -253,16 +253,16 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 
 	consumerUpdates := k.KeyAssignment(ctx, chainID).AssignDefaultsAndComputeUpdates(0, providerUpdates)
 
-	////////////////
-	// fmt.Println("provider updates")
-	// for _, u := range providerUpdates {
-	// 	fmt.Println(u.PubKey.String(), u.Power)
-	// }
-	// fmt.Println("consumer updates")
-	// for _, u := range consumerUpdates {
-	// 	fmt.Println(u.PubKey.String(), u.Power)
-	// }
-	////////////////
+	//////////////
+	fmt.Println("provider updates")
+	for _, u := range providerUpdates {
+		fmt.Println(u.PubKey.String(), u.Power)
+	}
+	fmt.Println("consumer updates")
+	for _, u := range consumerUpdates {
+		fmt.Println(u.PubKey.String(), u.Power)
+	}
+	//////////////
 
 	/// GUESS 1
 	// gen.InitialValSet = consumerUpdates
@@ -276,7 +276,7 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	/// NOTE: NewValidatorSet actually does UpdateWithChangeSet
 	// and incrementProposer priority
 	gen.InitialValSet = consumerUpdates
-	gen.InitialValSet = providerUpdates
+	gen.InitialValSet = consumerUpdates
 	validatorUpdates, err := tmtypes.PB2TM.ValidatorUpdates(consumerUpdates)
 	if err != nil {
 		panic("bad0")
