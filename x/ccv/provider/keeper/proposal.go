@@ -58,6 +58,15 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 
 	fmt.Println("Inside CreateConsumerClient, ", ctx.BlockTime().String())
 
+	consumerGen, _, err := k.MakeConsumerGenesis(ctx, chainID)
+	if err != nil {
+		return err
+	}
+	err = k.SetConsumerGenesis(ctx, chainID, consumerGen)
+	if err != nil {
+		return err
+	}
+
 	// Consumers always start out with the default unbonding period
 	consumerUnbondingPeriod := consumertypes.DefaultConsumerUnbondingPeriod
 
@@ -81,15 +90,6 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 		return err
 	}
 	k.SetConsumerClientId(ctx, chainID, clientID)
-
-	consumerGen, _, err := k.MakeConsumerGenesis(ctx, chainID)
-	if err != nil {
-		return err
-	}
-	err = k.SetConsumerGenesis(ctx, chainID, consumerGen)
-	if err != nil {
-		return err
-	}
 
 	// add the init timeout timestamp for this consumer chain
 	ts := ctx.BlockTime().Add(k.GetParams(ctx).InitTimeoutPeriod)
