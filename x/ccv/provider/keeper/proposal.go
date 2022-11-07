@@ -30,7 +30,7 @@ import (
 func (k Keeper) HandleConsumerAdditionProposal(ctx sdk.Context, p *types.ConsumerAdditionProposal) error {
 	if !ctx.BlockTime().Before(p.SpawnTime) {
 		// lockUbdOnTimeout is set to be false, regardless of what the proposal says, until we can specify and test issues around this use case more thoroughly
-		fmt.Println("HandleConsumerAdditionProposal: SpawnTime has passed, calling CreateConsumerClient,", p.ChainId, p.InitialHeight, ctx.BlockTime().String())
+		fmt.Println("HandleConsumerAdditionProposal: SpawnTime has passed, calling CreateConsumerClient,", p.ChainId, p.InitialHeight, ctx.BlockTime().String(), ctx.BlockHeight())
 		return k.CreateConsumerClient(ctx, p.ChainId, p.InitialHeight, false)
 	}
 
