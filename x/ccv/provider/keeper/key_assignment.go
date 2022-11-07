@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"errors"
+	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
@@ -258,9 +259,79 @@ func fromMap(consumerUpdates map[ConsumerPublicKey]int64) []abci.ValidatorUpdate
 	for ck, power := range consumerUpdates {
 		ret = append(ret, abci.ValidatorUpdate{PubKey: ck, Power: power})
 	}
+	sort.Slice(ret, func(i, j int) bool {
+		if ret[i].Power < ret[j].Power {
+			return true
+		}
+		return ret[i].PubKey.String() < ret[j].PubKey.String()
+	})
 	return ret
 }
 
+//
+// A per-consumer chain instance of KeyAssignment enables mapping updates from the provider
+// to updates for the consumer
+// ComputeUpdates(vscid VSCID, stakingUpdates []abci.ValidatorUpdate) (consumerUpdates []abci.ValidatorUpdate){
+
+// 	updatesToSend <- map<key, power>
+
+// 	// Step 1
+// 	// Get a list of provider consensus keys for which, either,
+// 	// a) the assigned key has changed and the consumer has the old assigned key
+// 	// b) the voting power has changed
+// 	keys <- getProviderKeysForUpdate(stakingUpdates)
+
+// 	// Step 2
+// 	// For each provider consensus key for which
+// 	// a) the consumer has the old assigned key
+// 	// retrieve the last voting power associated to that key, that the consumer was sent
+// 	// (since the consumer 'has' the old assigned key, the power will be positive)
+// 	lastPositiveUpdates <- getProviderKeysLastPositiveUpdate(keys)
+
+// 	// Step 3
+// 	// For each provider consensus key for which
+// 	// a) the consumer has the old assigned key
+// 	// note a ZERO power update in updatesToSend.
+// 	// After this step, updatesToSend contains a zero power update for
+// 	// each consensus key that the consumer chain tendermint instance is aware of.
+// 	// In this manner, these updates, when handed to tendermint, DELETE the validator
+// 	// from the active set.
+// 	for key in keys {
+// 		if there is an update in lastPositiveUpdates for key {
+// 			updatesToSend[consumerKey(key)] <- 0
+// 		}
+// 	}
+
+// 	// Step 4
+// 	// For each provider consensus key for which
+// 	// a) the assigned key has changed and the consumer has the old assigned key
+// 	// b) the voting power has changed
+// 	// If the voting power changed, create an update for that key with the latest
+// 	// voting power. If the voting power did not change, create an update for that
+// 	// key with the LAST voting power associated to that key.
+// 	for key in keys {
+// 		power <- 0
+// 		if there is an update in lastPositiveUpdates for key {
+// 			power <- update.power
+// 		}
+// 		if there is an update in stakingUpdates for key {
+// 			power <- update.power
+// 		}
+// 		if 0 < power {
+// 			updatesToSend[consumerKey(key)] <- power
+// 		}
+// 	}
+
+// 	// Step 5
+// 	for <key, power> in updatesToSend {
+// 		if 0 < power {
+// 			// Store the update, so that it will be retrieved in future calls to
+// 			// getProviderKeysLastPositiveUpdate(..)
+// 		}
+// 	}
+
+//		return mapToList(updatesToSend)
+//	}
 func (ka *KeyAssignment) ComputeUpdates(vscid VSCID, stakingUpdates []abci.ValidatorUpdate) (consumerUpdates []abci.ValidatorUpdate) {
 	return fromMap(ka.getConsumerUpdates(vscid, toMap(stakingUpdates)))
 }
