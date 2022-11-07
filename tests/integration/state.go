@@ -95,7 +95,7 @@ func (tr TestRun) getChainState(chain chainID, modelState ChainState) ChainState
 	}
 
 	if modelState.ValPowers != nil {
-		tr.waitBlocks(chain, 1, 10*time.Second)
+		tr.waitBlocks(chain, 1, 20*time.Second)
 		powers := tr.getValPowers(chain, *modelState.ValPowers)
 		chainState.ValPowers = &powers
 	}
@@ -206,9 +206,9 @@ func (tr TestRun) getRewards(chain chainID, modelState Rewards) Rewards {
 	receivedRewards := map[validatorID]bool{}
 
 	currentBlock := tr.getBlockHeight(chain)
-	tr.waitBlocks(chain, 1, 10*time.Second)
+	tr.waitBlocks(chain, 1, 20*time.Second)
 	nextBlock := tr.getBlockHeight(chain)
-	tr.waitBlocks(chain, 1, 10*time.Second)
+	tr.waitBlocks(chain, 1, 20*time.Second)
 
 	if !modelState.IsIncrementalReward {
 		currentBlock = 1
