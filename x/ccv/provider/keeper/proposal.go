@@ -30,7 +30,7 @@ import (
 func (k Keeper) HandleConsumerAdditionProposal(ctx sdk.Context, p *types.ConsumerAdditionProposal) error {
 	if !ctx.BlockTime().Before(p.SpawnTime) {
 		// lockUbdOnTimeout is set to be false, regardless of what the proposal says, until we can specify and test issues around this use case more thoroughly
-		fmt.Println("HandleConsumerAdditionProposal: SpawnTime has passed, calling CreateConsumerClient,", p.ChainId, p.InitialHeight)
+		fmt.Println("HandleConsumerAdditionProposal: SpawnTime has passed, calling CreateConsumerClient,", p.ChainId, p.InitialHeight, ctx.BlockTime().String())
 		return k.CreateConsumerClient(ctx, p.ChainId, p.InitialHeight, false)
 	}
 
@@ -55,6 +55,8 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 		// drop the proposal
 		return nil
 	}
+
+	fmt.Println("Inside CreateConsumerClient, ", ctx.BlockTime().String())
 
 	// Consumers always start out with the default unbonding period
 	consumerUnbondingPeriod := consumertypes.DefaultConsumerUnbondingPeriod
@@ -263,6 +265,7 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 		fmt.Println(u.PubKey.String(), u.Power)
 	}
 	//////////////
+	gen.InitialValSet = providerUpdates
 
 	/// GUESS 1
 	// gen.InitialValSet = consumerUpdates
@@ -276,7 +279,6 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	/// NOTE: NewValidatorSet actually does UpdateWithChangeSet
 	// and incrementProposer priority
 	// gen.InitialValSet = consumerUpdates
-	gen.InitialValSet = providerUpdates
 	validatorUpdates, err := tmtypes.PB2TM.ValidatorUpdates(consumerUpdates)
 	if err != nil {
 		panic("bad0")
@@ -287,9 +289,7 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 		panic("bad1")
 	}
 	nValSet.IncrementProposerPriority(1)
-
 	nextValidatorsHash = nValSet.Hash()
-
 	fmt.Println("BlockHeader():", string(ctx.BlockHeader().NextValidatorsHash))
 	fmt.Println("computed     :", string(nextValidatorsHash))
 	return gen, nextValidatorsHash, nil
