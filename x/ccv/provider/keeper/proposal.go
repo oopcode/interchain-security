@@ -30,6 +30,7 @@ import (
 func (k Keeper) HandleConsumerAdditionProposal(ctx sdk.Context, p *types.ConsumerAdditionProposal) error {
 	if !ctx.BlockTime().Before(p.SpawnTime) {
 		// lockUbdOnTimeout is set to be false, regardless of what the proposal says, until we can specify and test issues around this use case more thoroughly
+		fmt.Println("HandleConsumerAdditionProposal: SpawnTime has passed, calling CreateConsumerClient,", p.ChainId, p.InitialHeight)
 		return k.CreateConsumerClient(ctx, p.ChainId, p.InitialHeight, false)
 	}
 
@@ -55,16 +56,6 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 		return nil
 	}
 
-	consumerGen, _, err := k.MakeConsumerGenesis(ctx, chainID)
-
-	if err != nil {
-		return err
-	}
-	err = k.SetConsumerGenesis(ctx, chainID, consumerGen)
-	if err != nil {
-		return err
-	}
-
 	// Consumers always start out with the default unbonding period
 	consumerUnbondingPeriod := consumertypes.DefaultConsumerUnbondingPeriod
 
@@ -88,6 +79,15 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 		return err
 	}
 	k.SetConsumerClientId(ctx, chainID, clientID)
+
+	consumerGen, _, err := k.MakeConsumerGenesis(ctx, chainID)
+	if err != nil {
+		return err
+	}
+	err = k.SetConsumerGenesis(ctx, chainID, consumerGen)
+	if err != nil {
+		return err
+	}
 
 	// add the init timeout timestamp for this consumer chain
 	ts := ctx.BlockTime().Add(k.GetParams(ctx).InitTimeoutPeriod)
