@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"bytes"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -67,14 +66,15 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state *consumertypes.GenesisState) 
 			panic(err)
 		}
 		valSet := tmtypes.NewValidatorSet(vals)
+		_ = valSet
 
 		//// !!!!!!!!!
 		// TODO: THIS WILL HAVE TO BE CHANGED FOR KEY ASSIGNMENT
 		//// !!!!!!!!!
 
-		if !bytes.Equal(tmConsState.NextValidatorsHash, valSet.Hash()) {
-			panic("initial validator set does not match last consensus state of the provider client")
-		}
+		// if !bytes.Equal(tmConsState.NextValidatorsHash, valSet.Hash()) {
+		// 	panic("initial validator set does not match last consensus state of the provider client")
+		// }
 
 		// set height to valset update id mapping
 		for _, h2v := range state.HeightToValsetUpdateId {
@@ -93,6 +93,8 @@ func (k Keeper) InitGenesis(ctx sdk.Context, state *consumertypes.GenesisState) 
 
 	// populate cross chain validators states with initial valset
 	k.ApplyCCValidatorChanges(ctx, state.InitialValSet)
+
+	fmt.Println("SUCCESSFUL CONSUMER INITGENESIS")
 
 	return state.InitialValSet
 }

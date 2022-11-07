@@ -260,10 +260,10 @@ func fromMap(consumerUpdates map[ConsumerPublicKey]int64) []abci.ValidatorUpdate
 		ret = append(ret, abci.ValidatorUpdate{PubKey: ck, Power: power})
 	}
 	sort.Slice(ret, func(i, j int) bool {
-		if ret[i].Power < ret[j].Power {
+		if ret[i].Power > ret[j].Power {
 			return true
 		}
-		return ret[i].PubKey.String() < ret[j].PubKey.String()
+		return ret[i].PubKey.String() > ret[j].PubKey.String()
 	})
 	return ret
 }

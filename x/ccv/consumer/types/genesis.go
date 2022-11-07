@@ -1,14 +1,11 @@
 package types
 
 import (
-	"bytes"
-
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	ibctmtypes "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // NewInitialGenesisState returns a consumer GenesisState for a completely new consumer chain.
@@ -91,17 +88,17 @@ func (gs GenesisState) Validate() error {
 
 		// ensure that initial validator set is same as initial consensus state on provider client.
 		// this will be verified by provider module on channel handshake.
-		vals, err := tmtypes.PB2TM.ValidatorUpdates(gs.InitialValSet)
-		if err != nil {
-			return sdkerrors.Wrap(err, "could not convert val updates to validator set")
-		}
+		// vals, err := tmtypes.PB2TM.ValidatorUpdates(gs.InitialValSet)
+		// if err != nil {
+		// 	return sdkerrors.Wrap(err, "could not convert val updates to validator set")
+		// }
 		/////////!!!!
 		// TODO: this will also have to change for key assignment
 		/////////
-		valSet := tmtypes.NewValidatorSet(vals)
-		if !bytes.Equal(gs.ProviderConsensusState.NextValidatorsHash, valSet.Hash()) {
-			return sdkerrors.Wrap(ccv.ErrInvalidGenesis, "initial validators does not hash to NextValidatorsHash on provider client")
-		}
+		// valSet := tmtypes.NewValidatorSet(vals)
+		// if !bytes.Equal(gs.ProviderConsensusState.NextValidatorsHash, valSet.Hash()) {
+		// 	return sdkerrors.Wrap(ccv.ErrInvalidGenesis, "initial validators does not hash to NextValidatorsHash on provider client")
+		// }
 	} else {
 		// NOTE: For restart genesis, we will verify initial validator set in InitGenesis.
 		if gs.ProviderClientId == "" {

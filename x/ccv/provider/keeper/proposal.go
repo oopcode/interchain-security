@@ -58,7 +58,7 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 
 	fmt.Println("Inside CreateConsumerClient, ", ctx.BlockTime().String())
 
-	consumerGen, _, err := k.MakeConsumerGenesis(ctx, chainID)
+	consumerGen, nextValHash, err := k.MakeConsumerGenesis(ctx, chainID)
 	if err != nil {
 		return err
 	}
@@ -81,8 +81,8 @@ func (k Keeper) CreateConsumerClient(ctx sdk.Context, chainID string,
 	consensusState := ibctmtypes.NewConsensusState(
 		ctx.BlockTime(),
 		commitmenttypes.NewMerkleRoot([]byte(ibctmtypes.SentinelRoot)),
-		ctx.BlockHeader().NextValidatorsHash,
-		// nextValHash,
+		// ctx.BlockHeader().NextValidatorsHash,
+		nextValHash,
 	)
 
 	clientID, err := k.clientKeeper.CreateClient(ctx, clientState, consensusState)
@@ -265,7 +265,7 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 		fmt.Println(u.PubKey.String(), u.Power)
 	}
 	//////////////
-	gen.InitialValSet = providerUpdates
+	gen.InitialValSet = consumerUpdates
 
 	/// GUESS 1
 	// gen.InitialValSet = consumerUpdates
