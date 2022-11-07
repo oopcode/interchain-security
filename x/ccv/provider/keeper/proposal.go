@@ -275,8 +275,8 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	/// GUESS 2, see tendermint.state.execution.go
 	/// NOTE: NewValidatorSet actually does UpdateWithChangeSet
 	// and incrementProposer priority
-	gen.InitialValSet = consumerUpdates
-	gen.InitialValSet = consumerUpdates
+	// gen.InitialValSet = consumerUpdates
+	gen.InitialValSet = providerUpdates
 	validatorUpdates, err := tmtypes.PB2TM.ValidatorUpdates(consumerUpdates)
 	if err != nil {
 		panic("bad0")
