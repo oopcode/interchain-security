@@ -279,7 +279,7 @@ func (k Keeper) MakeConsumerGenesis(ctx sdk.Context, chainID string) (gen consum
 	if 1 < len(providerUpdates) {
 		providerUpdates[1], providerUpdates[0] = providerUpdates[0], providerUpdates[1]
 	}
-	gen.InitialValSet = providerUpdates
+	gen.InitialValSet = consumerUpdates
 	validatorUpdates, err := tmtypes.PB2TM.ValidatorUpdates(consumerUpdates)
 	if err != nil {
 		panic("bad0")
