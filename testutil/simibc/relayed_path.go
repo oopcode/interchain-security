@@ -9,6 +9,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	ibctmtypes "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
+	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
@@ -16,6 +17,13 @@ import (
 // RelayedPath augments ibctesting.Path, giving fine-grained control
 // over delivery of client updates, packet and ack delivery, and
 // chain time and height progression.
+//
+// TODO: after adding more automated packet parsing from events
+// it will be necessary to document some precise rules on exactly
+// what kind of applications are supported. For example, at first,
+// it's unlikely that any applications which emit packetSends on
+// 'updateClient' will be supported, but ones that send packets on
+// begin/endblock/tx will be..
 type RelayedPath struct {
 	t             *testing.T
 	path          *ibctesting.Path
@@ -108,13 +116,7 @@ func (f *RelayedPath) EndAndBeginBlock(chainID string, dt time.Duration, preComm
 	// Store header to be used in UpdateClient
 	f.clientHeaders[chainID] = append(f.clientHeaders[chainID], c.LastHeader)
 
-	for _, e := range ebRes.Events {
-		if e.Type == channeltypes.EventTypeSendPacket {
-			packet, _ := channelkeeper.ReconstructPacketFromEvent(e)
-			// Collect packets
-			f.Link.AddPacket(chainID, packet)
-		}
-	}
+	f.RoutePacketsFromEvents(ebRes.Events)
 
 	// Commit packets emmitted up to this point
 	f.Link.Commit(chainID)
@@ -129,7 +131,8 @@ func (f *RelayedPath) EndAndBeginBlock(chainID string, dt time.Duration, preComm
 		NextValidatorsHash: c.NextVals.Hash(),
 	}
 
-	_ = c.App.BeginBlock(abci.RequestBeginBlock{Header: c.CurrentHeader})
+	bbRes := c.App.BeginBlock(abci.RequestBeginBlock{Header: c.CurrentHeader})
+	f.RoutePacketsFromEvents(bbRes.Events)
 }
 
 func (f *RelayedPath) other(chainID string) string {
@@ -152,4 +155,39 @@ func (f *RelayedPath) endpoint(chainID string) *ibctesting.Endpoint {
 	}
 	f.t.Fatal("endpoint")
 	return nil
+}
+
+type ConnectionPacket struct {
+	packet     channeltypes.Packet
+	connection string
+}
+
+func (f *RelayedPath) GetPacketsFromEvents(events []abci.Event) []ConnectionPacket {
+	ret := []ConnectionPacket{}
+	for _, e := range events {
+		if e.Type == channeltypes.EventTypeSendPacket {
+			packet, err := channelkeeper.ReconstructPacketFromEvent(e)
+			require.NoError(f.t, err)
+			var connection string
+			for _, attr := range e.Attributes {
+				if string(attr.Key) == string(channeltypes.AttributeKeyConnection) {
+					connection = string(attr.Value)
+				}
+			}
+			require.NotEmpty(f.t, connection)
+			ret = append(ret, ConnectionPacket{packet, connection})
+		}
+	}
+	return ret
+}
+
+func (f *RelayedPath) RoutePackets(packets []ConnectionPacket) {
+	for _, p := range packets {
+		f.Link.AddPacket("foo", p.packet) // TODO:
+	}
+}
+
+func (f *RelayedPath) RoutePacketsFromEvents(events []abci.Event) {
+	packets := f.GetPacketsFromEvents(events)
+	f.RoutePackets(packets)
 }
