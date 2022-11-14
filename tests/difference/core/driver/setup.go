@@ -442,12 +442,12 @@ func (b *Builder) addExtraValidators() {
 	}
 }
 
-func (b *Builder) setSlashParams() {
+func (b *Builder) setProviderSlashParams() {
 	// Set the slash factors on the provider to match the model
-	sparams := b.providerSlashingKeeper().GetParams(b.ctx(P))
-	sparams.SlashFractionDoubleSign = b.initState.SlashDoublesign
-	sparams.SlashFractionDowntime = b.initState.SlashDowntime
-	b.providerSlashingKeeper().SetParams(b.ctx(P), sparams)
+	params := b.providerSlashingKeeper().GetParams(b.ctx(P))
+	params.SlashFractionDoubleSign = b.initState.SlashDoublesign
+	params.SlashFractionDowntime = b.initState.SlashDowntime
+	b.providerSlashingKeeper().SetParams(b.ctx(P), params)
 }
 
 func (b *Builder) createConsumerGenesis(tmConfig *ibctesting.TendermintConfig) *consumertypes.GenesisState {
@@ -613,7 +613,7 @@ func (b *Builder) deliver(chainID string) {
 }
 
 func (b *Builder) deliverAcks(chainID string) {
-	for _, ack := range b.link.ConsumeAcks(b.otherID(chainID), 999999) {
+	for _, ack := range b.link.ConsumeAcks(b.otherID(chainID), 999999) { // Deliver all the acks
 		err := simibc.TryRecvAck(b.endpointFromID(b.otherID(chainID)), b.endpointFromID(chainID), ack.Packet, ack.Ack)
 		if err != nil {
 			b.coordinator.Fatal("deliverAcks")
@@ -665,13 +665,11 @@ func (b *Builder) endBlock(chainID string) {
 func (b *Builder) build() {
 
 	b.createChains()
-
+	b.setProviderSlashParams()
 	b.addExtraValidators()
 
 	// Commit the additional validators
 	b.coordinator.CommitBlock(b.providerChain())
-
-	b.setSlashParams()
 
 	// Set light client params to match model
 	tmConfig := ibctesting.NewTendermintConfig()
