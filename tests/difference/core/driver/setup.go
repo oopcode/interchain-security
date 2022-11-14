@@ -470,7 +470,7 @@ func (b *Builder) createConsumerGenesis(tmConfig *ibctesting.TendermintConfig) *
 		consumertypes.DefaultTransferTimeoutPeriod,
 		consumertypes.DefaultConsumerRedistributeFrac,
 		consumertypes.DefaultHistoricalEntries,
-		consumertypes.DefaultConsumerUnbondingPeriod,
+		initState.UnbondingC,
 	)
 	return consumertypes.NewInitialGenesisState(providerClient, providerConsState, valUpdates, params)
 }
@@ -682,9 +682,6 @@ func (b *Builder) build() {
 
 	// Create a simulated network link link
 	b.createLink()
-
-	// Set the unbonding time on the consumer to the model value
-	b.consumerKeeper().SetUnbondingPeriod(b.ctx(C), b.initState.UnbondingC)
 
 	// Establish connection, channel
 	b.doIBCHandshake()
