@@ -1,6 +1,7 @@
 package simibc
 
 import (
+	"fmt"
 	"time"
 
 	"testing"
@@ -116,6 +117,11 @@ func (f *RelayedPath) EndAndBeginBlock(chainID string, dt time.Duration, preComm
 	// Store header to be used in UpdateClient
 	f.clientHeaders[chainID] = append(f.clientHeaders[chainID], c.LastHeader)
 
+	if 0 < len(ebRes.Events) {
+
+		fmt.Println("routing chain", chainID)
+	}
+
 	f.RoutePacketsFromEvents(ebRes.Events)
 
 	// Commit packets emmitted up to this point
@@ -172,6 +178,7 @@ func (f *RelayedPath) GetPacketsFromEvents(events []abci.Event) []ConnectionPack
 			for _, attr := range e.Attributes {
 				if string(attr.Key) == string(channeltypes.AttributeKeyConnection) {
 					connection = string(attr.Value)
+					fmt.Println("connection", connection)
 				}
 			}
 			require.NotEmpty(f.t, connection)
