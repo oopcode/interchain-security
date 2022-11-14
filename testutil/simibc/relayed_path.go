@@ -50,7 +50,7 @@ func (f *RelayedPath) Chain(chainID string) *ibctesting.TestChain {
 // call.
 func (f *RelayedPath) UpdateClient(chainID string) {
 	for _, header := range f.clientHeaders[f.other(chainID)] {
-		err := UpdateReceiverClient(f.endpoint(f.other(chainID)), f.endpoint(chainID), header)
+		_, err := UpdateReceiverClient(f.endpoint(f.other(chainID)), f.endpoint(chainID), header)
 		if err != nil {
 			f.t.Fatal("UpdateClient")
 		}
@@ -69,7 +69,7 @@ func (f *RelayedPath) UpdateClient(chainID string) {
 // separately.
 func (f *RelayedPath) DeliverPackets(chainID string, num int) {
 	for _, p := range f.Link.ConsumePackets(f.other(chainID), num) {
-		ack, err := TryRecvPacket(f.endpoint(f.other(chainID)), f.endpoint(chainID), p.Packet)
+		_, ack, err := TryRecvPacket(f.endpoint(f.other(chainID)), f.endpoint(chainID), p.Packet)
 		if err != nil {
 			f.t.Fatal("deliver")
 		}
@@ -80,7 +80,7 @@ func (f *RelayedPath) DeliverPackets(chainID string, num int) {
 // DeliverAcks delivers <num> acks to chain
 func (f *RelayedPath) DeliverAcks(chainID string, num int) {
 	for _, ack := range f.Link.ConsumeAcks(f.other(chainID), num) {
-		err := TryRecvAck(f.endpoint(f.other(chainID)), f.endpoint(chainID), ack.Packet, ack.Ack)
+		_, err := TryRecvAck(f.endpoint(f.other(chainID)), f.endpoint(chainID), ack.Packet, ack.Ack)
 		if err != nil {
 			f.t.Fatal("deliverAcks")
 		}

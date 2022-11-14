@@ -15,12 +15,12 @@ import (
 
 // UpdateReceiverClient is used to send a header to the receiving endpoint and update
 // the client of the respective chain.
-func UpdateReceiverClient(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, header *ibctmtypes.Header) (err error) {
+func UpdateReceiverClient(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, header *ibctmtypes.Header) (result *sdk.Result, err error) {
 
 	header, err = constructTMHeader(receiver.Chain, header, sender.Chain, receiver.ClientID, clienttypes.ZeroHeight())
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	msg, err := clienttypes.NewMsgUpdateClient(
@@ -30,7 +30,7 @@ func UpdateReceiverClient(sender *ibctesting.Endpoint, receiver *ibctesting.Endp
 
 	require.NoError(receiver.Chain.T, err)
 
-	_, _, err = simapp.SignAndDeliver(
+	_, result, err = simapp.SignAndDeliver(
 		receiver.Chain.T,
 		receiver.Chain.TxConfig,
 		receiver.Chain.App.GetBaseApp(),
@@ -43,26 +43,26 @@ func UpdateReceiverClient(sender *ibctesting.Endpoint, receiver *ibctesting.Endp
 	)
 
 	if err != nil {
-		return err
+		return result, err
 	}
 
 	err = receiver.Chain.SenderAccount.SetSequence(receiver.Chain.SenderAccount.GetSequence() + 1)
 
 	if err != nil {
-		return err
+		return result, err
 	}
 
-	return nil
+	return result, nil
 }
 
 // Try to receive a packet on receiver. Returns ack.
-func TryRecvPacket(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, packet channeltypes.Packet) (ack []byte, err error) {
+func TryRecvPacket(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, packet channeltypes.Packet) (result *sdk.Result, ack []byte, err error) {
 	packetKey := host.PacketCommitmentKey(packet.GetSourcePort(), packet.GetSourceChannel(), packet.GetSequence())
 	proof, proofHeight := sender.Chain.QueryProof(packetKey)
 
 	RPmsg := channeltypes.NewMsgRecvPacket(packet, proof, proofHeight, receiver.Chain.SenderAccount.GetAddress().String())
 
-	_, resWithAck, err := simapp.SignAndDeliver(
+	_, result, err = simapp.SignAndDeliver(
 		receiver.Chain.T,
 		receiver.Chain.TxConfig,
 		receiver.Chain.App.GetBaseApp(),
@@ -75,33 +75,33 @@ func TryRecvPacket(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, p
 	)
 
 	if err != nil {
-		return nil, err
+		return result, nil, err
 	}
 
 	err = receiver.Chain.SenderAccount.SetSequence(receiver.Chain.SenderAccount.GetSequence() + 1)
 
 	if err != nil {
-		return nil, err
+		return result, nil, err
 	}
 
-	ack, err = ibctesting.ParseAckFromEvents(resWithAck.GetEvents())
+	ack, err = ibctesting.ParseAckFromEvents(result.GetEvents())
 
 	if err != nil {
-		return nil, err
+		return result, nil, err
 	}
 
-	return ack, nil
+	return result, ack, nil
 }
 
 // Try to receive an ack on receiver.
-func TryRecvAck(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, packet channeltypes.Packet, ack []byte) (err error) {
+func TryRecvAck(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, packet channeltypes.Packet, ack []byte) (result *sdk.Result, err error) {
 	p := packet
 	packetKey := host.PacketAcknowledgementKey(p.GetDestPort(), p.GetDestChannel(), p.GetSequence())
 	proof, proofHeight := sender.Chain.QueryProof(packetKey)
 
 	ackMsg := channeltypes.NewMsgAcknowledgement(p, ack, proof, proofHeight, receiver.Chain.SenderAccount.GetAddress().String())
 
-	_, _, err = simapp.SignAndDeliver(
+	_, result, err = simapp.SignAndDeliver(
 		receiver.Chain.T,
 		receiver.Chain.TxConfig,
 		receiver.Chain.App.GetBaseApp(),
@@ -114,16 +114,16 @@ func TryRecvAck(sender *ibctesting.Endpoint, receiver *ibctesting.Endpoint, pack
 	)
 
 	if err != nil {
-		return err
+		return result, err
 	}
 
 	err = receiver.Chain.SenderAccount.SetSequence(receiver.Chain.SenderAccount.GetSequence() + 1)
 
 	if err != nil {
-		return err
+		return result, err
 	}
 
-	return nil
+	return result, nil
 }
 
 // constructTMHeader will augment a valid 07-tendermint Header with data needed to update

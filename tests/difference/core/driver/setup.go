@@ -569,7 +569,7 @@ func (b *Builder) sendEmptyVSCPacketToFinishHandshake() {
 
 	b.updateClient(b.chainID(C))
 
-	ack, err := simibc.TryRecvPacket(b.endpoint(P), b.endpoint(C), packet)
+	_, ack, err := simibc.TryRecvPacket(b.endpoint(P), b.endpoint(C), packet)
 
 	b.link.AddAck(b.chainID(C), ack, packet)
 
@@ -601,7 +601,7 @@ func (b *Builder) beginBlock(chainID string) {
 
 func (b *Builder) updateClient(chainID string) {
 	for _, header := range b.clientHeaders[b.otherID(chainID)] {
-		err := simibc.UpdateReceiverClient(b.endpointFromID(b.otherID(chainID)), b.endpointFromID(chainID), header)
+		_, err := simibc.UpdateReceiverClient(b.endpointFromID(b.otherID(chainID)), b.endpointFromID(chainID), header)
 		if err != nil {
 			b.coordinator.Fatal("updateClient")
 		}
@@ -614,7 +614,7 @@ func (b *Builder) deliver(chainID string) {
 	for _, p := range packets {
 		receiver := b.endpointFromID(chainID)
 		sender := receiver.Counterparty
-		ack, err := simibc.TryRecvPacket(sender, receiver, p.Packet)
+		_, ack, err := simibc.TryRecvPacket(sender, receiver, p.Packet)
 		if err != nil {
 			b.coordinator.Fatal("deliver")
 		}
@@ -624,7 +624,7 @@ func (b *Builder) deliver(chainID string) {
 
 func (b *Builder) deliverAcks(chainID string) {
 	for _, ack := range b.link.ConsumeAcks(b.otherID(chainID), 999999) {
-		err := simibc.TryRecvAck(b.endpointFromID(b.otherID(chainID)), b.endpointFromID(chainID), ack.Packet, ack.Ack)
+		_, err := simibc.TryRecvAck(b.endpointFromID(b.otherID(chainID)), b.endpointFromID(chainID), ack.Packet, ack.Ack)
 		if err != nil {
 			b.coordinator.Fatal("deliverAcks")
 		}
