@@ -38,6 +38,7 @@ import (
 	consumerkeeper "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 	providerkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 
 	channelkeeper "github.com/cosmos/ibc-go/v3/modules/core/04-channel/keeper"
 	ccv "github.com/cosmos/interchain-security/x/ccv/types"
@@ -506,17 +507,6 @@ func (b *Builder) createLink() {
 	}
 }
 
-func (b *Builder) configureIBCTestingPath() {
-	// Configure the ibc path
-	b.path = ibctesting.NewPath(b.consumerChain(), b.providerChain())
-	b.endpoint(C).ChannelConfig.PortID = ccv.ConsumerPortID
-	b.endpoint(P).ChannelConfig.PortID = ccv.ProviderPortID
-	b.endpoint(C).ChannelConfig.Version = ccv.Version
-	b.endpoint(P).ChannelConfig.Version = ccv.Version
-	b.endpoint(C).ChannelConfig.Order = channeltypes.ORDERED
-	b.endpoint(P).ChannelConfig.Order = channeltypes.ORDERED
-}
-
 func (b *Builder) setProviderAccountNumber() {
 
 	err := b.endpoint(P).Chain.SenderAccount.SetAccountNumber(6)
@@ -760,34 +750,84 @@ func GetZeroState(suite *suite.Suite, initState InitState) (
 	// Commit the additional provider validators
 	b.coordinator.CommitBlock(b.providerChain())
 
-	b.configureIBCTestingPath()
+	height := clienttypes.NewHeight(0, uint64(b.consumerChain().CurrentHeader.Height))
+	proposal := providertypes.NewConsumerAdditionProposal("", "",
+		b.chainID(C),
+		height,
+		[]byte("a"),
+		[]byte("a"),
+		b.providerChain().CurrentHeader.Time.Add(-time.Hour)).(*providertypes.ConsumerAdditionProposal)
 
-	b.setProviderAccountNumber() // TODO: this is magic. To be removed.
-	b.configureProviderIBCTestingEndpoint()
+	b.providerKeeper().HandleConsumerAdditionProposal(b.ctx(P), proposal)
+	consumerGenesis, found := b.providerKeeper().GetConsumerGenesis(b.ctx(P), b.chainID(C))
+	require.True(b.suite.T(), found)
 
-	b.setConsumerAccountNumber() // TODO: this is magic. To be removed.
-	consumerClientGenesisState := b.createConsumerClientGenesisState()
-	consumerGenesis := b.createConsumerGenesis(consumerClientGenesisState)
-	// Reboot the consumer application state from its genesis data
-	// this will create a client for the provider on the consumer.
-	b.consumerKeeper().InitGenesis(b.ctx(C), consumerGenesis)
-	b.configureConsumerIBCTestingEndpoint()
+	b.coordinator.CommitBlock(b.providerChain())
+	b.coordinator.CommitBlock(b.consumerChain())
+
+	b.path = ibctesting.NewPath(b.consumerChain(), b.providerChain())
+	b.endpoint(C).ChannelConfig.PortID = ccv.ConsumerPortID
+	b.endpoint(P).ChannelConfig.PortID = ccv.ProviderPortID
+	b.endpoint(C).ChannelConfig.Version = ccv.Version
+	b.endpoint(P).ChannelConfig.Version = ccv.Version
+	b.endpoint(C).ChannelConfig.Order = channeltypes.ORDERED
+	b.endpoint(P).ChannelConfig.Order = channeltypes.ORDERED
+
+	b.setProviderAccountNumber()
+	clientID, found := b.providerKeeper().GetConsumerClientId(b.ctx(P), b.chainID(C))
+	require.True(b.suite.T(), found)
+	b.endpoint(P).ClientID = clientID
+	b.setConsumerAccountNumber()
+
+	b.consumerKeeper().InitGenesis(b.ctx(C), &consumerGenesis)
+	clientID, found = b.consumerKeeper().GetProviderClientID(b.ctx(C))
+	require.True(b.suite.T(), found)
+	b.endpoint(C).ClientID = clientID
+
+	b.coordinator.CommitBlock(b.providerChain())
+	b.coordinator.CommitBlock(b.consumerChain())
 
 	// Handshake
 	b.coordinator.CreateConnections(b.path)
 	b.coordinator.CreateChannels(b.path)
 
+	/*
+		TODO:
+		For a truly correct setup it is necessary to have the correct unbonding periods
+		set in the client state for each light client. When using the correct unbonding
+		periods I was experiencing issues wit the client expiring.
+		The code below is an attempt at a hack intended ot get around this issue, but
+		what is missing is setting the unbonding period in the client states.
+		Unfortunately, the client states are not mutable without doing 'update client'
+		or upgrade client.
+		I think the best thing might be to just use the correct unbonding periods and
+		try to avoid expiry.
+	*/
+	{
+		params := b.providerStakingKeeper().GetParams(b.ctx(P))
+		params.UnbondingTime = initState.UnbondingP
+		b.providerStakingKeeper().SetParams(b.ctx(P), params)
+
+	}
+
+	{
+		params := b.consumerKeeper().GetParams(b.ctx(C))
+		params.UnbondingPeriod = initState.UnbondingC
+		b.consumerKeeper().SetParams(b.ctx(C), params)
+	}
+
 	// Send an empty VSC packet from the provider to the consumer to finish
 	// the handshake. This is necessary because the model starts from a
 	// completely initialized state, with a completed handshake.
-	b.sendEmptyVSCPacket() // TODO: this will be removed
+	b.sendEmptyVSCPacket()
 	// Run some protocol steps to allow the first VSC to mature and for the
 	// handshake to complete.
-	b.runSomeProtocolSteps() // TODO: this will be removed
+	b.runSomeProtocolSteps()
 
 	// Height of the last committed block (current header is not committed)
 	heightLastCommitted := b.chain(P).CurrentHeader.Height - 1
 	// Time of the last committed block (current header is not committed)
 	timeLastCommitted := b.chain(P).CurrentHeader.Time.Add(-b.initState.BlockSeconds).Unix()
+
 	return b.path, b.valAddresses, heightLastCommitted, timeLastCommitted
 }
