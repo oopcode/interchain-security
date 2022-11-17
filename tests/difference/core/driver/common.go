@@ -58,9 +58,9 @@ func init() {
 		InitialDelegatorTokens: 10000000000000,
 		SlashDoublesign:        sdk.NewDec(0),
 		SlashDowntime:          sdk.NewDec(0),
-		UnbondingP:             time.Second * 790,
+		UnbondingP:             time.Second * 70,
 		UnbondingC:             time.Second * 50,
-		Trusting:               time.Second * 490,
+		Trusting:               time.Second * 49,
 		MaxClockDrift:          time.Second * 10000,
 		BlockSeconds:           time.Second * 6,
 		ValStates: ValStates{
