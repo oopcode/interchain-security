@@ -20,6 +20,7 @@ import (
 
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	simapp "github.com/cosmos/interchain-security/testutil/simapp"
 
 	testcrypto "github.com/cosmos/interchain-security/testutil/crypto"
 
@@ -33,7 +34,6 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	appConsumer "github.com/cosmos/interchain-security/app/consumer"
 	appProvider "github.com/cosmos/interchain-security/app/provider"
-	icstestingutils "github.com/cosmos/interchain-security/testutil/ibc_testing"
 	simibc "github.com/cosmos/interchain-security/testutil/simibc"
 	consumerkeeper "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 	consumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
@@ -342,14 +342,14 @@ func (b *Builder) createValidators() (*tmtypes.ValidatorSet, map[string]tmtypes.
 
 func (b *Builder) createChains() {
 
-	coordinator := ibctesting.NewCoordinator(b.suite.T(), 0)
+	coordinator := simapp.NewBasicCoordinator(b.suite.T())
 
 	// Create tmValidators
-	validators, signers, sdkValAddresses := b.createValidators()
+	tmValidators, signers, sdkValAddresses := b.createValidators()
 	// Create provider
-	coordinator.Chains[ibctesting.GetChainID(0)] = b.newChain(coordinator, icstestingutils.ProviderAppIniter, ibctesting.GetChainID(0), validators, signers)
+	coordinator.Chains[ibctesting.GetChainID(0)] = b.newChain(coordinator, simapp.SetupTestingappProvider, ibctesting.GetChainID(0), tmValidators, signers)
 	// Create consumer, using the same validators.
-	coordinator.Chains[ibctesting.GetChainID(1)] = b.newChain(coordinator, icstestingutils.ConsumerAppIniter, ibctesting.GetChainID(1), validators, signers)
+	coordinator.Chains[ibctesting.GetChainID(1)] = b.newChain(coordinator, simapp.SetupTestingAppConsumer, ibctesting.GetChainID(1), tmValidators, signers)
 
 	b.coordinator = coordinator
 	b.valAddresses = sdkValAddresses
@@ -494,7 +494,7 @@ func (b *Builder) createConsumerGenesis(client *ibctmtypes.ClientState) *consume
 		consumertypes.DefaultHistoricalEntries,
 		initState.UnbondingC,
 	)
-	return consumertypes.NewInitialGenesisState(client, providerConsState, valUpdates, params)
+	return consumertypes.NewInitialGenesisState(client, providerConsState, valUpdates, consumertypes.SlashRequests{}, params)
 }
 
 func (b *Builder) createLink() {
