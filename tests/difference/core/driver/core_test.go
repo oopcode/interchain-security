@@ -421,6 +421,8 @@ func (s *CoreSuite) TestAssumptions() {
 	s.Require().Empty(s.simibc.Link.OutboxPackets[C])
 	s.Require().Empty(s.simibc.Link.OutboxAcks[P])
 	s.Require().Empty(s.simibc.Link.OutboxAcks[C])
+
+	s.Require().False(true)
 }
 
 // Test a set of traces
