@@ -12,8 +12,10 @@ import (
 
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
+	clienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	simapp "github.com/cosmos/interchain-security/testutil/simapp"
 	simibc "github.com/cosmos/interchain-security/testutil/simibc"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 )
 
 const P = "provider"
@@ -92,9 +94,38 @@ type PrototypeSuite struct {
 	offsetHeight   int64
 }
 
-func GetZeroState(suite *suite.Suite, initState InitState) (
-	*ibctesting.Path, []sdk.ValAddress, int64, int64) {
-	coord, prov, cons := simapp.NewProviderConsumerCoordinator(suite.T())
+type builder struct {
+	suite       *suite.Suite
+	link        simibc.OrderedLink
+	path        *ibctesting.Path
+	coordinator *ibctesting.Coordinator
+}
+
+func (b *builder) t() *testing.T { return b.suite.T() }
+
+func GetZeroState(suite *suite.Suite, initState InitState) (*ibctesting.Path, []sdk.ValAddress, int64, int64) {
+	b := builder{}
+	// Get only the provider
+	// coord, prov, cons := simapp.NewProviderConsumerCoordinator(suite.T())
+	b.coordinator = simapp.NewBasicCoordinator(b.t())
+	chainID := ibctesting.GetChainID(1)
+	consChainID := ibctesting.GetChainID(2)
+	coordinator.Chains[chainID] = ibctesting.NewTestChain(t, coordinator, simapp.SetupTestingappProvider, chainID)
+	prov := coordinator.Chains[chainID]
+
+	height := clienttypes.NewHeight(0, uint64(b.consumerChain().CurrentHeader.Height))
+	proposal := providertypes.NewConsumerAdditionProposal("", "",
+		consChainID,
+		height,
+		[]byte("a"),
+		[]byte("a"),
+		prov.CurrentHeader.Time.Add(-time.Hour)).(*providertypes.ConsumerAdditionProposal)
+
+	b.providerKeeper().HandleConsumerAdditionProposal(b.ctx(P), proposal)
+	consumerGenesis, found := b.providerKeeper().GetConsumerGenesis(b.ctx(P), b.chainID(C))
+
+	// prov.NextBlock()
+
 	_ = coord
 
 	path := ibctesting.NewPath(prov, cons)
