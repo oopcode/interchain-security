@@ -758,8 +758,8 @@ func (b *Builder) endBlock(chainID string, blockDuration time.Duration) {
 	c.App.BeginBlock(abci.RequestBeginBlock{Header: c.CurrentHeader})
 }
 
-func (b Builder) createIsolatedProvider() (*ibctesting.TestChain, *tmtypes.ValidatorSet, map[string]tmtypes.PrivValidator) {
-	c := Coord{ibctesting.NewCoordinator(b.suite.T(), 0)}
+func (b *Builder) build() {
+	b.coordinator = &Coord{ibctesting.NewCoordinator(b.suite.T(), 0)}
 	validators, signers, addresses := b.createValidators(
 		initState.ValStates.Tokens[:2], // TODO: unhardcode, number of initial bonded provider validators
 		initState.PKSeeds,
@@ -777,16 +777,7 @@ func (b Builder) createIsolatedProvider() (*ibctesting.TestChain, *tmtypes.Valid
 		initState.UnbondingP,
 	)
 	b.initChain(b.chainID(P), validators, pApp, pBytes, initState.ConsensusParams)
-	c.SetChain(b.chainID(P), c.NewIBCTestingChain(b.suite.T(), b.chainID(P), validators, signers, pApp, pSenders))
-	return c.GetChain(b.chainID(P)), validators, signers
-}
-
-func (b *Builder) build() {
-	b.coordinator = &Coord{ibctesting.NewCoordinator(b.suite.T(), 0)}
-	isolatedP, validators, signers := b.createIsolatedProvider()
-	isolatedP.Coordinator = b.coordinator.backing
-	b.coordinator.SetChain(b.chainID(P), isolatedP)
-
+	b.coordinator.SetChain(b.chainID(P), b.coordinator.NewIBCTestingChain(b.suite.T(), b.chainID(P), validators, signers, pApp, pSenders))
 	cApp, cGenesis := icstestingutils.ConsumerAppIniter()
 	cBytes, cSenders := b.getModifiedGenesisState(cApp, cGenesis, validators,
 		initState.MaxValidators,
@@ -798,7 +789,6 @@ func (b *Builder) build() {
 		initState.MaxEntries,
 		initState.UnbondingP,
 	)
-
 	b.initChain(b.chainID(C), validators, cApp, cBytes, initState.ConsensusParams)
 	b.coordinator.SetChain(b.chainID(C), b.coordinator.NewIBCTestingChain(b.suite.T(), b.chainID(C), validators, signers, cApp, cSenders))
 
