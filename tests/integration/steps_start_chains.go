@@ -86,12 +86,14 @@ func stepsStartConsumerChain(consumerName string, proposalIndex, chainIndex uint
 			action: assignConsumerPubKeyAction{
 				chain:          chainID("consu"),
 				validator:      validatorID("alice"),
-				consumerPubKey: `{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AmsMYPwx28dnUE0Y91Hxtzz0qosilwjv9RnOhs1cf/Kw"}`,
+				consumerPubKey: `{"@type":"/cosmos.crypto.ed25519.PubKey","key":"GJuUXISPjcWRIbEdzLTtVHzhnt9T98URH/gOA8KB7fA="}`,
 			},
 			state: State{
 				chainID("consu"): ChainState{
 					AssignedKeys: &map[validatorID]string{
-						validatorID("alice"): "GJuUXISPjcWRIbEdzLTtVHzhnt9T98URH/gOA8KB7fA=",
+						// TODO: msalopek -> I got the address by setting key and querying for it
+						// Maybe make it so we return a pubkey and not an address?
+						validatorID("alice"): "cosmosvalcons16q4jna57d07rufql8qtzaqhwf3ud3hdf5yt3y2",
 					},
 				},
 			},
