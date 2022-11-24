@@ -99,6 +99,8 @@ func (tr *TestRun) runStep(step Step, verbose bool) {
 		tr.invokeDoublesignSlash(action, verbose)
 	case registerRepresentativeAction:
 		tr.registerRepresentative(action, verbose)
+	case assignConsumerPubKeyAction:
+		tr.assignConsumerPubKey(action, verbose)
 	default:
 		log.Fatalf(fmt.Sprintf(`unknown action in testRun %s: %#v`, tr.name, action))
 	}
