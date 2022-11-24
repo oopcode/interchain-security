@@ -86,7 +86,7 @@ func stepsStartConsumerChain(consumerName string, proposalIndex, chainIndex uint
 			action: assignConsumerPubKeyAction{
 				chain:          chainID("consu"),
 				validator:      validatorID("alice"),
-				consumerPubKey: `{"type":"tendermint/PubKeyEd25519","value":"GJuUXISPjcWRIbEdzLTtVHzhnt9T98URH/gOA8KB7fA="}`,
+				consumerPubKey: `{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AmsMYPwx28dnUE0Y91Hxtzz0qosilwjv9RnOhs1cf/Kw"}`,
 			},
 			state: State{
 				chainID("consu"): ChainState{
