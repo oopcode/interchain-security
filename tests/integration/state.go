@@ -514,17 +514,16 @@ func (tr TestRun) getConsumerAddresses(chain chainID, modelState map[validatorID
 	return actualState
 }
 
-// getConsumerChains returns a list of consumer chains that're being secured by the provider chain,
-// determined by querying the provider chain.
-func (tr TestRun) getConsumerAddress(chain chainID, validator validatorID) string {
+func (tr TestRun) getConsumerAddress(consumerChain chainID, validator validatorID) string {
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
-	cmd := exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[chain].binaryName,
+	cmd := exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[chainID("provi")].binaryName,
 
 		"query", "provider", "validator-consumer-key",
-		string(chain), tr.validatorConfigs[validator].valoperAddress,
-		`--node`, tr.getQueryNode(chain),
+		string(consumerChain), tr.validatorConfigs[validator].valoperAddress,
+		`--node`, tr.getQueryNode(chainID("provi")),
 		`-o`, `json`,
 	)
+	fmt.Println("## CMD", cmd.String())
 
 	bz, err := cmd.CombinedOutput()
 	if err != nil {
