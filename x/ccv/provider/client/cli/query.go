@@ -178,7 +178,7 @@ $ %s query provider validator-consumer-key foochain %s1gghjut3ccd8ay0zduzj64hwre
 
 			consumerChainID := args[0]
 
-			addr, err := sdk.ValAddressFromBech32(args[1])
+			addr, err := sdk.ConsAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}

@@ -519,7 +519,7 @@ func (tr TestRun) getConsumerAddress(consumerChain chainID, validator validatorI
 	cmd := exec.Command("docker", "exec", tr.containerConfig.instanceName, tr.chainConfigs[chainID("provi")].binaryName,
 
 		"query", "provider", "validator-consumer-key",
-		string(consumerChain), tr.validatorConfigs[validator].valoperAddress,
+		string(consumerChain), tr.validatorConfigs[validator].valconsAddress,
 		`--node`, tr.getQueryNode(chainID("provi")),
 		`-o`, `json`,
 	)

@@ -1069,11 +1069,11 @@ func (tr TestRun) assignConsumerPubKey(action assignConsumerPubKeyAction, verbos
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	cmd := exec.Command("docker", "exec",
 		tr.containerConfig.instanceName,
+		"/bin/bash", "-c",
 		tr.chainConfigs[chainID("provi")].binaryName,
-
 		"tx", "provider", "assign-consensus-key",
 		string(tr.chainConfigs[action.chain].chainId),
-		fmt.Sprintf("'%s'", action.consumerPubKey),
+		fmt.Sprintf(`'%s'`, action.consumerPubKey),
 		`--from`, `validator`+fmt.Sprint(action.validator),
 		`--chain-id`, string(tr.chainConfigs[chainID("provi")].chainId),
 		`--home`, tr.getValidatorHome(chainID("provi"), action.validator),
