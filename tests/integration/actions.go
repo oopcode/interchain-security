@@ -1055,3 +1055,39 @@ func (tr TestRun) invokeDoublesignSlash(
 	}
 	tr.waitBlocks("provi", 10, 2*time.Minute)
 }
+
+type assignConsumerPubKeyAction struct {
+	chain     chainID
+	validator validatorID
+	// {"type":"tendermint/PubKeyEd25519","value":"5ekRfVUhYeWH0Oi6g5wyQARoDlkyU3k6TUYSFV/XZ2M="}
+	consumerPubKey string
+}
+
+func (tr TestRun) assignConsumerPubKey(action assignConsumerPubKeyAction, verbose bool) {
+	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
+	cmd := exec.Command("docker", "exec",
+		tr.containerConfig.instanceName,
+		tr.chainConfigs[action.chain].binaryName,
+
+		"tx", "provider", "assign-consensus-key",
+		string(tr.chainConfigs[action.chain].chainId),
+		action.consumerPubKey,
+		`--from`, `validator`+fmt.Sprint(action.validator),
+		`--chain-id`, string(tr.chainConfigs[action.chain].chainId),
+		`--home`, tr.getValidatorHome(action.chain, action.validator),
+		`--node`, tr.getValidatorNode(action.chain, action.validator),
+		`--gas`, "900000",
+		`--keyring-backend`, `test`,
+		`-b`, `block`,
+		`-y`,
+	)
+
+	if verbose {
+		fmt.Println("redelegate cmd:", cmd.String())
+	}
+
+	bz, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatal(err, "\n", string(bz))
+	}
+}
