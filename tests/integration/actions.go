@@ -1059,7 +1059,9 @@ func (tr TestRun) invokeDoublesignSlash(
 type assignConsumerPubKeyAction struct {
 	chain     chainID
 	validator validatorID
-	// {"type":"tendermint/PubKeyEd25519","value":"5ekRfVUhYeWH0Oi6g5wyQARoDlkyU3k6TUYSFV/XZ2M="}
+	// obtained using: interchain-security-pd keys add <name> --keyring-backend test
+	// and copying the 'pubkey' field from terminal output
+	// {"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AyM+CKzFKY+WwYVYmOShkgshJW4pjwqKVlKKxrQ69yhF"}
 	consumerPubKey string
 }
 
@@ -1067,13 +1069,13 @@ func (tr TestRun) assignConsumerPubKey(action assignConsumerPubKeyAction, verbos
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	cmd := exec.Command("docker", "exec",
 		tr.containerConfig.instanceName,
-		tr.chainConfigs[action.chain].binaryName,
+		tr.chainConfigs[chainID("provi")].binaryName,
 
 		"tx", "provider", "assign-consensus-key",
 		string(tr.chainConfigs[action.chain].chainId),
 		action.consumerPubKey,
 		`--from`, `validator`+fmt.Sprint(action.validator),
-		`--chain-id`, string(tr.chainConfigs[action.chain].chainId),
+		`--chain-id`, string(tr.chainConfigs[chainID("provi")].chainId),
 		`--home`, tr.getValidatorHome(action.chain, action.validator),
 		`--node`, tr.getValidatorNode(action.chain, action.validator),
 		`--gas`, "900000",
@@ -1081,6 +1083,7 @@ func (tr TestRun) assignConsumerPubKey(action assignConsumerPubKeyAction, verbos
 		`-b`, `block`,
 		`-y`,
 	)
+	fmt.Println("### CMD ###", cmd.String())
 
 	if verbose {
 		fmt.Println("redelegate cmd:", cmd.String())

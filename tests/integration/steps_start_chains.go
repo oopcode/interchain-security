@@ -83,6 +83,20 @@ func stepsStartConsumerChain(consumerName string, proposalIndex, chainIndex uint
 			},
 		},
 		{
+			action: assignConsumerPubKeyAction{
+				chain:          chainID("consu"),
+				validator:      validatorID("alice"),
+				consumerPubKey: `{"type":"tendermint/PubKeyEd25519","value":"GJuUXISPjcWRIbEdzLTtVHzhnt9T98URH/gOA8KB7fA="}`,
+			},
+			state: State{
+				chainID("consu"): ChainState{
+					AssignedKeys: &map[validatorID]string{
+						validatorID("alice"): "GJuUXISPjcWRIbEdzLTtVHzhnt9T98URH/gOA8KB7fA=",
+					},
+				},
+			},
+		},
+		{
 			action: startConsumerChainAction{
 				consumerChain: chainID(consumerName),
 				providerChain: chainID("provi"),

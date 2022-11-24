@@ -15,7 +15,8 @@ func concatSteps(steps ...[]Step) []Step {
 
 var keyAssignment = concatSteps(
 	stepsStartChains([]string{"consu"}, false),
-	stepsAssignConsumerKey("consu"))
+	// stepsAssignConsumerKey("consu")
+)
 
 var happyPathSteps = concatSteps(
 	stepsStartChains([]string{"consu"}, false),
