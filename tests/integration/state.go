@@ -523,7 +523,6 @@ func (tr TestRun) getConsumerAddress(consumerChain chainID, validator validatorI
 		`--node`, tr.getQueryNode(chainID("provi")),
 		`-o`, `json`,
 	)
-	fmt.Println("## CMD", cmd.String())
 
 	bz, err := cmd.CombinedOutput()
 	if err != nil {

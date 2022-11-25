@@ -1066,27 +1066,25 @@ type assignConsumerPubKeyAction struct {
 }
 
 func (tr TestRun) assignConsumerPubKey(action assignConsumerPubKeyAction, verbose bool) {
+	bashCommand := fmt.Sprintf(
+		`%s tx provider assign-consensus-key %s '%s' --from validator%s --chain-id %s --home %s --node %s --gas 900000 --keyring-backend test -b block -y`,
+		tr.chainConfigs[chainID("provi")].binaryName,
+		string(tr.chainConfigs[action.chain].chainId),
+		action.consumerPubKey,
+		action.validator,
+		tr.chainConfigs[chainID("provi")].chainId,
+		tr.getValidatorHome(chainID("provi"), action.validator),
+		tr.getValidatorNode(chainID("provi"), action.validator),
+	)
 	//#nosec G204 -- Bypass linter warning for spawning subprocess with cmd arguments.
 	cmd := exec.Command("docker", "exec",
 		tr.containerConfig.instanceName,
 		"/bin/bash", "-c",
-		tr.chainConfigs[chainID("provi")].binaryName,
-		"tx", "provider", "assign-consensus-key",
-		string(tr.chainConfigs[action.chain].chainId),
-		fmt.Sprintf(`'%s'`, action.consumerPubKey),
-		`--from`, `validator`+fmt.Sprint(action.validator),
-		`--chain-id`, string(tr.chainConfigs[chainID("provi")].chainId),
-		`--home`, tr.getValidatorHome(chainID("provi"), action.validator),
-		`--node`, tr.getValidatorNode(chainID("provi"), action.validator),
-		`--gas`, "900000",
-		`--keyring-backend`, `test`,
-		`-b`, `block`,
-		`-y`,
+		bashCommand,
 	)
-	fmt.Println("### CMD ###", cmd.String())
 
 	if verbose {
-		fmt.Println("redelegate cmd:", cmd.String())
+		fmt.Println("assignConsumerPubKey cmd:", cmd.String())
 	}
 
 	bz, err := cmd.CombinedOutput()
