@@ -2,6 +2,9 @@ package app
 
 import (
 	"fmt"
+	"github.com/gravity-devs/liquidity/x/liquidity"
+	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"io"
 	stdlog "log"
 	"net/http"
@@ -147,6 +150,8 @@ var (
 		vesting.AppModuleBasic{},
 		//router.AppModuleBasic{},
 		ibcconsumer.AppModuleBasic{},
+
+		liquidity.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -160,6 +165,7 @@ var (
 		ibcconsumertypes.ConsumerToSendToProviderName: nil,
 		ibctransfertypes.ModuleName:                   {authtypes.Minter, authtypes.Burner},
 		ccvgovtypes.ModuleName:                        {authtypes.Burner},
+		liquiditytypes.ModuleName:                     {authtypes.Minter, authtypes.Burner},
 	}
 )
 
@@ -210,6 +216,8 @@ type App struct { // nolint: golint
 	ScopedTransferKeeper    capabilitykeeper.ScopedKeeper
 	ScopedIBCConsumerKeeper capabilitykeeper.ScopedKeeper
 
+	LiquidityKeeper liquiditykeeper.Keeper
+
 	// the module manager
 	MM *module.Manager
 
@@ -256,7 +264,7 @@ func New(
 		ccvgovtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey,
 		capabilitytypes.StoreKey, authzkeeper.StoreKey,
-		ibcconsumertypes.StoreKey,
+		ibcconsumertypes.StoreKey, liquiditytypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -468,6 +476,11 @@ func New(
 
 	app.EvidenceKeeper = *evidenceKeeper
 
+	app.LiquidityKeeper = liquiditykeeper.NewKeeper(
+		appCodec, keys[liquiditytypes.StoreKey], app.GetSubspace(liquiditytypes.ModuleName),
+		app.BankKeeper, app.AccountKeeper, app.DistrKeeper,
+	)
+
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -491,6 +504,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		consumerModule,
+		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -507,6 +521,7 @@ func New(
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
 		ccvstakingtypes.ModuleName,
+		liquiditytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		ccvgovtypes.ModuleName,
@@ -523,6 +538,7 @@ func New(
 		crisistypes.ModuleName,
 		ccvgovtypes.ModuleName,
 		ccvstakingtypes.ModuleName,
+		liquiditytypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -559,6 +575,7 @@ func New(
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
+		liquiditytypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
@@ -589,6 +606,7 @@ func New(
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper), ibc.NewAppModule(app.IBCKeeper),
+		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		transferModule,
 	)
@@ -899,6 +917,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(ibcconsumertypes.ModuleName)
+	paramsKeeper.Subspace(liquiditytypes.ModuleName)
 
 	return paramsKeeper
 }
